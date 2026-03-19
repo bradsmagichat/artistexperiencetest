@@ -281,8 +281,6 @@
     color: var(--purple);
   }
 
-  .genre-chip input { display: none; }
-
   .vocal-toggle {
     display: flex;
     gap: 10px;
@@ -313,8 +311,6 @@
     color: #ffffff;
     border-color: rgba(160,80,255,0.5);
   }
-
-  .vocal-option input { display: none; }
 
   .link-input-wrap { position: relative; }
 
@@ -408,6 +404,76 @@
     line-height: 1.8;
     font-weight: 400;
   }
+
+  /* ── COMING SOON TEASER ── */
+  .teaser-section {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 0 24px 48px;
+    animation: fadeUp 0.7s ease-out 0.2s both;
+  }
+
+  .teaser-card {
+    background:
+      radial-gradient(ellipse at 20% 30%, rgba(160,80,255,0.12) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 70%, rgba(255,140,40,0.1) 0%, transparent 50%);
+    background-color: rgba(255,255,255,0.03);
+    border: 1px solid rgba(160,80,255,0.15);
+    border-radius: 18px;
+    padding: 40px 44px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .teaser-eyebrow {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(255,140,40,0.7);
+    margin-bottom: 16px;
+  }
+
+  .teaser-title {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    color: #ffffff;
+    margin-bottom: 12px;
+  }
+
+  .teaser-desc {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.75;
+    color: var(--white-52);
+    max-width: 420px;
+    margin: 0 auto 24px;
+  }
+
+  .teaser-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .teaser-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--white-52);
+  }
+
+  .teaser-pill .pill-icon { font-size: 14px; }
 
   .page-footer {
     max-width: 620px;
@@ -825,25 +891,25 @@
         <div class="field" style="margin-bottom: 20px;">
           <label>Genres</label>
           <div class="genre-grid" id="genreGrid">
-            <label class="genre-chip"><input type="checkbox" name="genres" value="pop">Pop</label>
-            <label class="genre-chip"><input type="checkbox" name="genres" value="country">Country</label>
-            <label class="genre-chip"><input type="checkbox" name="genres" value="rnb">R&B / Soul</label>
-            <label class="genre-chip"><input type="checkbox" name="genres" value="rock">Rock</label>
-            <label class="genre-chip"><input type="checkbox" name="genres" value="hip-hop">Hip-Hop</label>
-            <label class="genre-chip"><input type="checkbox" name="genres" value="folk">Folk / Acoustic</label>
-            <label class="genre-chip"><input type="checkbox" name="genres" value="indie">Indie</label>
-            <label class="genre-chip"><input type="checkbox" name="genres" value="latin">Latin</label>
-            <label class="genre-chip"><input type="checkbox" name="genres" value="jazz">Jazz</label>
-            <label class="genre-chip"><input type="checkbox" name="genres" value="edm">EDM</label>
-            <label class="genre-chip"><input type="checkbox" name="genres" value="other">Other</label>
+            <div class="genre-chip" data-value="pop">Pop</div>
+            <div class="genre-chip" data-value="country">Country</div>
+            <div class="genre-chip" data-value="rnb">R&B / Soul</div>
+            <div class="genre-chip" data-value="rock">Rock</div>
+            <div class="genre-chip" data-value="hip-hop">Hip-Hop</div>
+            <div class="genre-chip" data-value="folk">Folk / Acoustic</div>
+            <div class="genre-chip" data-value="indie">Indie / Alt</div>
+            <div class="genre-chip" data-value="latin">Latin</div>
+            <div class="genre-chip" data-value="edm">EDM</div>
           </div>
         </div>
 
         <div class="field">
           <label>Vocal Style</label>
           <div class="vocal-toggle" id="vocalToggle">
-            <label class="vocal-option"><input type="checkbox" name="vocal_style" value="male">Male</label>
-            <label class="vocal-option"><input type="checkbox" name="vocal_style" value="female">Female</label>
+            <div class="vocal-option" data-value="male">Male</div>
+            <div class="vocal-option" data-value="female">Female</div>
+            <div class="vocal-option" data-value="duo">Duo</div>
+            <div class="vocal-option" data-value="band">Band</div>
           </div>
         </div>
       </div>
@@ -851,7 +917,7 @@
       <!-- LINKS -->
       <div class="form-group-section">
         <div class="section-label">✦ &nbsp; Where Can We Hear You?</div>
-        <div class="section-sublabel">Drop a link or two so we can check out your sound.</div>
+        <div class="section-sublabel">Drop a link or two so we can become super fans.</div>
 
         <div class="field-row single" style="margin-bottom: 14px;">
           <div class="field">
@@ -943,6 +1009,24 @@
   </div>
 </section>
 
+<!-- COMING SOON TEASER -->
+<section class="teaser-section">
+  <div class="teaser-card">
+    <div class="teaser-eyebrow">✦ &nbsp; Coming Soon</div>
+    <div class="teaser-title">Songs are just the beginning.</div>
+    <div class="teaser-desc">We're building the full direct-to-fan experience ecosystem. New ways for your fans to connect with you, and new ways for you to earn.</div>
+    <div class="teaser-pills">
+      <span class="teaser-pill"><span class="pill-icon">📅</span> Fan bookings</span>
+      <span class="teaser-pill"><span class="pill-icon">💬</span> Live collabs</span>
+      <span class="teaser-pill"><span class="pill-icon">🎧</span> Exclusive listens</span>
+      <span class="teaser-pill"><span class="pill-icon">🤝</span> 1-of-1 meets</span>
+      <span class="teaser-pill"><span class="pill-icon">👕</span> Limited merch</span>
+      <span class="teaser-pill"><span class="pill-icon">🎵</span> Production credits</span>
+      <span class="teaser-pill"><span class="pill-icon">+</span> More</span>
+    </div>
+  </div>
+</section>
+
 <footer class="page-footer">
   <div class="footer-inner">
     <p>Questions? Reach us at <a href="/cdn-cgi/l/email-protection#29485b5d405a5d5a695a46474e4f40474a41074a4644"><span class="__cf_email__" data-cfemail="7e1f0c0a170d0a0d3e0d1110191817101d16501d1113">[email&#160;protected]</span></a></p>
@@ -950,15 +1034,21 @@
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  document.querySelectorAll('.genre-chip').forEach(chip => {
-    chip.addEventListener('click', () => chip.classList.toggle('selected'));
+<script>
+  // ── Genre chips: click to toggle ──
+  document.querySelectorAll('.genre-chip').forEach(function(chip) {
+    chip.addEventListener('click', function() {
+      chip.classList.toggle('selected');
+    });
   });
 
-  document.querySelectorAll('.vocal-option').forEach(option => {
-    option.addEventListener('click', () => {
-      option.classList.toggle('selected');
-      option.querySelector('input').checked = option.classList.contains('selected');
+  // ── Vocal options: click to select one ──
+  document.querySelectorAll('.vocal-option').forEach(function(option) {
+    option.addEventListener('click', function() {
+      document.querySelectorAll('.vocal-option').forEach(function(o) {
+        o.classList.remove('selected');
+      });
+      option.classList.add('selected');
     });
   });
 
@@ -977,8 +1067,8 @@
       phone:           document.getElementById('phone').value.trim(),
       artist_name:     document.getElementById('artistName').value.trim(),
       location:        document.getElementById('location').value.trim(),
-      genres:          [...document.querySelectorAll('input[name="genres"]:checked')].map(cb => cb.value),
-      vocal_style:     [...document.querySelectorAll('input[name="vocal_style"]:checked')].map(cb => cb.value),
+      genres:          [...document.querySelectorAll('.genre-chip.selected')].map(el => el.dataset.value),
+      vocal_style:     [...document.querySelectorAll('.vocal-option.selected')].map(el => el.dataset.value),
       spotify_url:     document.getElementById('spotifyLink').value.trim(),
       soundcloud_url:  document.getElementById('soundcloudLink').value.trim(),
       youtube_url:     document.getElementById('youtubeLink').value.trim(),
@@ -1003,4 +1093,14 @@
     // });
     // ──────────────────────────────────────────────────
 
-    console.
+    console.log('Artist intake payload:', formData);
+
+    setTimeout(function() {
+      document.getElementById('artistForm').style.display = 'none';
+      document.getElementById('successMsg').classList.add('show');
+    }, 1200);
+  });
+</script>
+
+</body>
+</html>
