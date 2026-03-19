@@ -463,6 +463,187 @@
   .palette-bar span:nth-child(2) { background: rgba(200,60,255,0.4); }
   .palette-bar span:nth-child(3) { background: rgba(255,140,40,0.5); }
 
+  /* ── VALUE PROP SECTION ── */
+  .value-section {
+    max-width: 620px;
+    margin: 0 auto 48px;
+    padding: 0 24px;
+    animation: fadeUp 0.7s ease-out 0.12s both;
+  }
+
+  .value-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 44px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .value-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, var(--purple), var(--purple-mid), var(--orange));
+  }
+
+  .value-headline {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(160,80,255,0.75);
+    margin-bottom: 16px;
+  }
+
+  .value-title {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.15;
+    color: #ffffff;
+    margin-bottom: 14px;
+  }
+
+  .value-intro {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.8;
+    color: var(--white-52);
+    margin-bottom: 32px;
+    max-width: 480px;
+  }
+
+  /* Streaming comparison */
+  .streaming-compare {
+    background: rgba(255,140,40,0.06);
+    border: 1px solid rgba(255,140,40,0.18);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+  }
+
+  .streaming-compare .compare-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 16px;
+  }
+
+  .compare-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .compare-row:last-child { border-bottom: none; }
+
+  .compare-source {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--white-52);
+  }
+
+  .compare-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white-52);
+    text-align: right;
+  }
+
+  .compare-row.highlight .compare-source {
+    font-weight: 700;
+    color: var(--orange);
+    font-size: 15px;
+  }
+
+  .compare-row.highlight .compare-value {
+    color: var(--orange);
+    font-size: 18px;
+    font-weight: 800;
+  }
+
+  /* Info blocks */
+  .value-blocks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .value-block {
+    background: rgba(160,80,255,0.06);
+    border: 1px solid rgba(160,80,255,0.16);
+    border-radius: 12px;
+    padding: 22px 24px;
+  }
+
+  .value-block .vb-icon {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .value-block .vb-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+
+  .value-block .vb-desc {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.65;
+    color: var(--text-secondary);
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin-top: 20px;
+    background: var(--bg);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--white-08);
+  }
+
+  .stat-item {
+    padding: 18px 12px;
+    text-align: center;
+    border-right: 1px solid var(--white-08);
+  }
+
+  .stat-item:last-child { border-right: none; }
+
+  .stat-number {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--orange);
+    letter-spacing: -0.5px;
+    margin-bottom: 2px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  @media (max-width: 640px) {
+    .value-card { padding: 36px 24px; border-radius: 14px; }
+    .streaming-compare { padding: 22px 20px; }
+    .value-blocks { grid-template-columns: 1fr; }
+    .stats-bar { grid-template-columns: 1fr 1fr; }
+    .stat-item:nth-child(2) { border-right: none; }
+  }
+
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(16px); }
     to { opacity: 1; transform: translateY(0); }
@@ -487,13 +668,111 @@
 </header>
 
 <section class="hero">
-  <div class="hero-eyebrow">✦ &nbsp; Join our platform.</div>
+  <div class="hero-eyebrow">✦ &nbsp; Join Our Platform.</div>
   <h1>We want you! 🎤</h1>
   <p>Share the basics. We'll take it from there.</p>
 </section>
 
 <div class="gradient-rule"></div>
 
+<!-- VALUE PROP -->
+<section class="value-section">
+  <div class="value-card">
+
+    <div class="value-headline">✦ &nbsp; Why Songfinch</div>
+    <div class="value-title">Real music. Real money. Real fans.</div>
+    <div class="value-intro">Songfinch is a platform where real people commission custom songs from artists they choose. You write, record, and get paid within the hour. It runs alongside everything else you do.</div>
+
+    <!-- Streaming comparison -->
+    <div class="streaming-compare">
+      <div class="compare-label">How This Stacks Up</div>
+      <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:20px;">Streams and views you'd need to match the payout from a single Songfinch song.*</div>
+
+      <div style="font-size:11px; color:var(--text-muted); margin-bottom:20px; font-style:italic;">*Assuming you own the whole song</div>
+
+      <!-- Column headers -->
+      <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:8px; margin-bottom:6px; padding:0 0 10px; border-bottom:1px solid rgba(255,255,255,0.06);">
+        <div style="font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted);"></div>
+        <div style="font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--orange); text-align:center;">@ $199</div>
+        <div style="font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--orange); text-align:center;">@ $499</div>
+        <div style="font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--orange); text-align:center;">@ $1,499</div>
+      </div>
+
+      <!-- Spotify -->
+      <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:8px; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.04); align-items:center;">
+        <div style="font-size:14px; font-weight:500; color:var(--white-52);">Spotify</div>
+        <div style="font-size:14px; font-weight:700; color:var(--text-primary); text-align:center;">~29K</div>
+        <div style="font-size:14px; font-weight:700; color:var(--text-primary); text-align:center;">~71K</div>
+        <div style="font-size:14px; font-weight:700; color:var(--text-primary); text-align:center;">~214K</div>
+      </div>
+
+      <!-- Apple Music -->
+      <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:8px; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.04); align-items:center;">
+        <div style="font-size:14px; font-weight:500; color:var(--white-52);">Apple Music</div>
+        <div style="font-size:14px; font-weight:700; color:var(--text-primary); text-align:center;">~13K</div>
+        <div style="font-size:14px; font-weight:700; color:var(--text-primary); text-align:center;">~33K</div>
+        <div style="font-size:14px; font-weight:700; color:var(--text-primary); text-align:center;">~100K</div>
+      </div>
+
+      <!-- TikTok -->
+      <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:8px; padding:12px 0; align-items:center;">
+        <div style="font-size:14px; font-weight:500; color:var(--white-52);">TikTok</div>
+        <div style="font-size:14px; font-weight:700; color:var(--text-primary); text-align:center;">~3.3M</div>
+        <div style="font-size:14px; font-weight:700; color:var(--text-primary); text-align:center;">~8.3M</div>
+        <div style="font-size:14px; font-weight:700; color:var(--text-primary); text-align:center;">~25M</div>
+      </div>
+
+      <div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.06); font-size:12px; color:var(--text-muted); line-height:1.6;">One song. That's all it takes. And you keep 100% of your rights.</div>
+    </div>
+
+    <!-- Info blocks -->
+    <div class="value-blocks">
+      <div class="value-block">
+        <div class="vb-icon">💰</div>
+        <div class="vb-title">50/50 split, you set your price</div>
+        <div class="vb-desc">$179 minimum per song. Average artist price is $249. Songs regularly sell at $1,099. PayPal within the hour, every time.</div>
+      </div>
+      <div class="value-block">
+        <div class="vb-icon">🛡️</div>
+        <div class="vb-title">100% your IP, forever</div>
+        <div class="vb-desc">You keep all writing and publishing rights. Songfinch only licenses personal use to the customer. Your catalog stays yours.</div>
+      </div>
+      <div class="value-block">
+        <div class="vb-icon">🤝</div>
+        <div class="vb-title">Label & publisher friendly</div>
+        <div class="vb-desc">Non-exclusive. No lock-in. Runs parallel to your label, publishing, and distribution deals. Activate or deactivate anytime.</div>
+      </div>
+      <div class="value-block">
+        <div class="vb-icon">⭐</div>
+        <div class="vb-title">Tips are 100% yours</div>
+        <div class="vb-desc">Every tip goes straight to you, not split, not shared. Customers who connect deeply tend to tip big. And they will.</div>
+      </div>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-number">$50M+</div>
+        <div class="stat-label">paid to artists</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">500K+</div>
+        <div class="stat-label">songs made</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">50/50</div>
+        <div class="stat-label">your split</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">100%</div>
+        <div class="stat-label">your IP, forever</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FORM -->
 <section class="form-section" id="artistFormSection">
   <div class="form-card">
 
@@ -556,7 +835,6 @@
             <label class="genre-chip"><input type="checkbox" name="genres" value="latin">Latin</label>
             <label class="genre-chip"><input type="checkbox" name="genres" value="jazz">Jazz</label>
             <label class="genre-chip"><input type="checkbox" name="genres" value="edm">EDM</label>
-            <label class="genre-chip"><input type="checkbox" name="genres" value="classical">Classical</label>
             <label class="genre-chip"><input type="checkbox" name="genres" value="other">Other</label>
           </div>
         </div>
@@ -564,8 +842,8 @@
         <div class="field">
           <label>Vocal Style</label>
           <div class="vocal-toggle" id="vocalToggle">
-            <label class="vocal-option"><input type="radio" name="vocal_style" value="male">Male</label>
-            <label class="vocal-option"><input type="radio" name="vocal_style" value="female">Female</label>
+            <label class="vocal-option"><input type="checkbox" name="vocal_style" value="male">Male</label>
+            <label class="vocal-option"><input type="checkbox" name="vocal_style" value="female">Female</label>
           </div>
         </div>
       </div>
@@ -573,7 +851,7 @@
       <!-- LINKS -->
       <div class="form-group-section">
         <div class="section-label">✦ &nbsp; Where Can We Hear You?</div>
-        <div class="section-sublabel">Drop a link or two so we can grow our audiences together</div>
+        <div class="section-sublabel">Drop a link or two so we can check out your sound.</div>
 
         <div class="field-row single" style="margin-bottom: 14px;">
           <div class="field">
@@ -679,9 +957,8 @@
 
   document.querySelectorAll('.vocal-option').forEach(option => {
     option.addEventListener('click', () => {
-      document.querySelectorAll('.vocal-option').forEach(o => o.classList.remove('selected'));
-      option.classList.add('selected');
-      option.querySelector('input').checked = true;
+      option.classList.toggle('selected');
+      option.querySelector('input').checked = option.classList.contains('selected');
     });
   });
 
@@ -701,7 +978,7 @@
       artist_name:     document.getElementById('artistName').value.trim(),
       location:        document.getElementById('location').value.trim(),
       genres:          [...document.querySelectorAll('input[name="genres"]:checked')].map(cb => cb.value),
-      vocal_style:     document.querySelector('input[name="vocal_style"]:checked')?.value || '',
+      vocal_style:     [...document.querySelectorAll('input[name="vocal_style"]:checked')].map(cb => cb.value),
       spotify_url:     document.getElementById('spotifyLink').value.trim(),
       soundcloud_url:  document.getElementById('soundcloudLink').value.trim(),
       youtube_url:     document.getElementById('youtubeLink').value.trim(),
