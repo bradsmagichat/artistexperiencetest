@@ -1,0 +1,83 @@
+name: Daily Milestone Digest
+
+on:
+  schedule:
+    - cron: '0 14 * * *'  # 9am CST (UTC-5) every day
+  workflow_dispatch:       # lets you trigger manually from GitHub Actions tab
+
+jobs:
+  send-digest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch sheet and send Slack digest
+        run: |
+          python3 << 'PYEOF'
+          import urllib.request
+          import json
+          import os
+          from datetime import datetime
+
+          SHEET_URL = os.environ['SHEET_URL']
+          SLACK_WEBHOOK = os.environ['SLACK_WEBHOOK']
+          MILESTONES = [5, 10, 15, 25, 50, 100, 500, 1000, 1500, 2000]
+          SKIP_NAMES = ['artist_name', 'artist name', 'name', 'artistname', '']
+
+          req = urllib.request.Request(SHEET_URL, headers={'User-Agent': 'Mozilla/5.0'})
+          with urllib.request.urlopen(req) as r:
+              raw = r.read().decode('utf-8')
+
+          def parse_csv(text):
+              rows = []
+              for line in text.strip().split('\n'):
+                  cols, cur, inq = [], '', False
+                  for c in line:
+                      if c == '"': inq = not inq
+                      elif c == ',' and not inq: cols.append(cur.strip()); cur = ''
+                      else: cur += c
+                  cols.append(cur.strip())
+                  rows.append(cols)
+              return rows
+
+          rows = parse_csv(raw)
+          artists = []
+          for r in rows[1:]:
+              if len(r) < 21: continue
+              name = r[1].strip()
+              if name.lower() in SKIP_NAMES or not name: continue
+              try:
+                  count = int(''.join(c for c in r[20].replace(',','') if c.isdigit()) or '0')
+              except: count = 0
+              artists.append({'name': name, 'count': count})
+
+          if not artists:
+              print("No artists found.")
+              exit(0)
+
+          hits = sorted([a for a in artists if a['count'] in MILESTONES], key=lambda x: x['count'], reverse=True)
+          today = datetime.now().strftime('%A, %B %-d')
+          lines = ['*Songfinch Milestone Report* | ' + today, '']
+
+          if hits:
+              word = 'artists' if len(hits) != 1 else 'artist'
+              lines.append('*' + str(len(hits)) + ' ' + word + ' hit a milestone today:*')
+              lines.append('')
+              for a in hits:
+                  lines.append('  - *' + a['name'] + '* just hit *' + str(a['count']) + ' songs*')
+              lines.append('')
+              lines.append('Time to celebrate them! :tada:')
+          else:
+              lines.append('No milestone hits today - check back tomorrow!')
+
+          payload = {'text': '\n'.join(lines)}
+          req = urllib.request.Request(
+              SLACK_WEBHOOK,
+              data=json.dumps(payload).encode('utf-8'),
+              headers={'Content-Type': 'application/json'}
+          )
+          with urllib.request.urlopen(req) as r:
+              print('Slack status: ' + str(r.status))
+          print('Done - ' + str(len(hits)) + ' milestones hit out of ' + str(len(artists)) + ' artists.')
+          PYEOF
+        env:
+          SHEET_URL: ${{ secrets.SHEET_URL }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
