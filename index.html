@@ -26,7 +26,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .section-count{font-size:12px;color:#aaa;}
 .artist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
 .artist-card{background:#fff;border:1px solid #e5e5e3;border-radius:12px;padding:1rem 1.25rem;}
-.artist-card.close{border-color:#fcd34d;background:#fffdf5;}
+.artist-card.close{border-color:#c4b5fd;background:#faf5ff;}
 .artist-card.hit{border-color:#86efac;background:#f0fdf4;}
 .avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
 .artist-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -34,7 +34,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .song-count{font-size:20px;font-weight:700;font-family:'SF Mono',ui-monospace,monospace;text-align:right;line-height:1;}
 .song-label{font-size:10px;color:#aaa;text-align:right;}
 .badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px;margin-bottom:6px;}
-.badge-warn{background:#fef3c7;color:#92400e;}
+.badge-warn{background:#ede9fe;color:#5b21b6;}
 .badge-success{background:#dcfce7;color:#166534;}
 .badge-info{background:#dbeafe;color:#1e40af;}
 .progress-labels{display:flex;justify-content:space-between;font-size:10px;color:#ccc;margin-bottom:2px;}
@@ -89,6 +89,28 @@ ol li{font-size:13px;line-height:1.7;margin-bottom:8px;}
 
   <!-- DASHBOARD -->
   <div id="panel-dashboard" class="panel">
+    <div class="filter-row" style="margin-bottom:1rem;">
+      <input class="search-bar" type="text" id="search" placeholder="Search artists..." oninput="renderAll()" style="width:220px;">
+      <select id="filter-milestone" onchange="renderAll()" style="width:180px;">
+        <option value="">All milestones</option>
+        <option value="5">Near 5</option>
+        <option value="10">Near 10</option>
+        <option value="15">Near 15</option>
+        <option value="25">Near 25</option>
+        <option value="50">Near 50</option>
+        <option value="100">Near 100</option>
+        <option value="500">Near 500</option>
+        <option value="1000">Near 1,000</option>
+        <option value="1500">Near 1,500</option>
+        <option value="2000">Near 2,000</option>
+      </select>
+      <select id="filter-sort" onchange="renderAll()" style="width:160px;">
+        <option value="closest">Closest to milestone</option>
+        <option value="most">Most songs</option>
+        <option value="least">Least songs</option>
+        <option value="alpha">A → Z</option>
+      </select>
+    </div>
     <div class="grid-4" id="dash-metrics"></div>
 
     <div id="close-section" style="margin-bottom:1.5rem;display:none;">
@@ -105,28 +127,6 @@ ol li{font-size:13px;line-height:1.7;margin-bottom:8px;}
       <div class="section-head">
         <span class="section-title">All artists</span>
         <span class="section-count" id="all-count"></span>
-      </div>
-      <div class="filter-row">
-        <input class="search-bar" type="text" id="search" placeholder="Search artists..." oninput="renderAll()" style="width:220px;">
-        <select id="filter-milestone" onchange="renderAll()" style="width:180px;">
-          <option value="">All milestones</option>
-          <option value="5">Near 5</option>
-          <option value="10">Near 10</option>
-          <option value="15">Near 15</option>
-          <option value="25">Near 25</option>
-          <option value="50">Near 50</option>
-          <option value="100">Near 100</option>
-          <option value="500">Near 500</option>
-          <option value="1000">Near 1,000</option>
-          <option value="1500">Near 1,500</option>
-          <option value="2000">Near 2,000</option>
-        </select>
-        <select id="filter-sort" onchange="renderAll()" style="width:160px;">
-          <option value="closest">Closest to milestone</option>
-          <option value="most">Most songs</option>
-          <option value="least">Least songs</option>
-          <option value="alpha">A → Z</option>
-        </select>
       </div>
       <div class="artist-grid" id="dash-artists"></div>
       <div id="load-more-wrap" style="text-align:center;margin-top:1rem;display:none;">
@@ -262,7 +262,7 @@ function artistCardHTML(a){
   const t=cfg.alertThreshold;
   const isHit=MILESTONES.includes(a.count);
   const isClose=info.next&&info.diff<=t;
-  const barClr=isHit?'#22c55e':isClose?'#ef4444':info.pct>=80?'#f59e0b':'#3b82f6';
+  const barClr=isHit?'#22c55e':isClose?'#8b5cf6':info.pct>=80?'#a78bfa':'#3b82f6';
   return`<div class="artist-card${isHit?' hit':isClose?' close':''}">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
       <div class="avatar" style="background:${bg};color:${tx};">${ini(a.name)}</div>
@@ -296,7 +296,7 @@ function renderDash(){
 
   document.getElementById('dash-metrics').innerHTML=`
     <div class="metric-card"><div class="metric-label">Artists on roster</div><div class="metric-value">${artists.length.toLocaleString()}</div></div>
-    <div class="metric-card"><div class="metric-label">Near milestone</div><div class="metric-value" style="color:${close.length?'#d97706':'inherit'}">${close.length.toLocaleString()}</div></div>
+    <div class="metric-card"><div class="metric-label">Near milestone</div><div class="metric-value" style="color:${close.length?'#7c3aed':'inherit'}">${close.length.toLocaleString()}</div></div>
     <div class="metric-card"><div class="metric-label">Milestones hit</div><div class="metric-value" style="color:#16a34a">${hits.length.toLocaleString()}</div></div>
     <div class="metric-card"><div class="metric-label">Total songs</div><div class="metric-value">${total.toLocaleString()}</div></div>
   `;
