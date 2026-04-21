@@ -5,69 +5,71 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Songfinch Milestone Tracker</title>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f3;color:#1a1a1a;min-height:100vh;}
-  .topbar{background:#fff;border-bottom:1px solid #e5e5e3;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
-  .topbar h1{font-size:16px;font-weight:600;letter-spacing:-.01em;}
-  .topbar-right{display:flex;align-items:center;gap:10px;}
-  .container{max-width:1100px;margin:0 auto;padding:2rem;}
-  .tabs{display:flex;gap:0;border-bottom:1px solid #e5e5e3;margin-bottom:1.5rem;}
-  .tab-btn{background:none;border:none;border-bottom:2px solid transparent;padding:10px 18px;font-size:13px;color:#888;cursor:pointer;margin-bottom:-1px;transition:all .15s;font-family:inherit;}
-  .tab-btn:hover{color:#1a1a1a;}
-  .tab-btn.active{color:#1a1a1a;border-bottom-color:#1a1a1a;font-weight:500;}
-  .grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:1.5rem;}
-  .metric-card{background:#fff;border-radius:12px;border:1px solid #e5e5e3;padding:1rem 1.25rem;}
-  .metric-card .label{font-size:12px;color:#888;margin-bottom:4px;}
-  .metric-card .value{font-size:26px;font-weight:600;font-family:'SF Mono',monospace;letter-spacing:-.02em;}
-  .alert-bar{background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
-  .alert-bar .msg{font-size:13px;color:#92400e;font-weight:500;}
-  .artist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;}
-  .artist-card{background:#fff;border:1px solid #e5e5e3;border-radius:12px;padding:1rem 1.25rem;transition:box-shadow .15s;}
-  .artist-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.07);}
-  .artist-card.close{border-color:#fcd34d;}
-  .artist-card.hit{border-color:#86efac;}
-  .avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;}
-  .artist-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .artist-id{font-size:11px;color:#aaa;margin-top:1px;}
-  .song-count{font-size:22px;font-weight:600;font-family:'SF Mono',monospace;text-align:right;}
-  .song-label{font-size:11px;color:#888;text-align:right;}
-  .badge{display:inline-block;font-size:11px;font-weight:500;padding:3px 8px;border-radius:6px;margin-bottom:8px;}
-  .badge-warn{background:#fef3c7;color:#92400e;}
-  .badge-success{background:#dcfce7;color:#166534;}
-  .badge-info{background:#dbeafe;color:#1e40af;}
-  .progress-wrap{margin:6px 0;}
-  .progress-labels{display:flex;justify-content:space-between;font-size:11px;color:#bbb;margin-bottom:3px;}
-  .progress-track{height:5px;background:#f0f0ee;border-radius:3px;overflow:hidden;}
-  .progress-fill{height:100%;border-radius:3px;transition:width .5s;}
-  .card-actions{display:flex;gap:6px;margin-top:10px;}
-  btn,.btn{background:#fff;border:1px solid #d5d5d3;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;color:#1a1a1a;transition:background .1s;}
-  button:hover,.btn:hover{background:#f5f5f3;}
-  button:active,.btn:active{transform:scale(.98);}
-  .btn-primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
-  .btn-primary:hover{background:#333;}
-  .btn-sm{padding:5px 10px;font-size:12px;}
-  .section-card{background:#fff;border:1px solid #e5e5e3;border-radius:12px;padding:1.25rem;margin-bottom:1rem;}
-  .section-title{font-size:13px;font-weight:500;color:#888;margin-bottom:12px;}
-  input,select{width:100%;border:1px solid #e5e5e3;border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none;transition:border .15s;}
-  input:focus,select:focus{border-color:#1a1a1a;}
-  label{font-size:12px;color:#888;display:block;margin-bottom:4px;}
-  ol{padding-left:1.2rem;}
-  ol li{font-size:13px;line-height:1.7;margin-bottom:8px;}
-  .nard-fact-card{background:#fff;border:1px solid #e5e5e3;border-radius:12px;padding:1.25rem;margin-bottom:1rem;}
-  .nard-note-card{background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:1.25rem;margin-bottom:1rem;}
-  .nard-note-card p{color:#166534;}
-  .spinner{display:inline-block;animation:spin 1s linear infinite;}
-  @keyframes spin{to{transform:rotate(360deg);}}
-  .toast{position:fixed;bottom:24px;right:24px;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;transition:opacity .3s;pointer-events:none;max-width:320px;}
-  .empty-state{text-align:center;padding:4rem 2rem;color:#888;font-size:14px;}
-  .sync-info{font-size:11px;color:#aaa;}
-  @media(max-width:600px){.container{padding:1rem;}.topbar{padding:0 1rem;}.grid-4{grid-template-columns:1fr 1fr;}}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f3;color:#1a1a1a;min-height:100vh;}
+.topbar{background:#fff;border-bottom:1px solid #e5e5e3;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
+.topbar-left{display:flex;align-items:center;gap:10px;}
+.topbar h1{font-size:15px;font-weight:600;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.container{max-width:1200px;margin:0 auto;padding:1.5rem 2rem;}
+.tabs{display:flex;border-bottom:1px solid #e5e5e3;margin-bottom:1.5rem;}
+.tab-btn{background:none;border:none;border-bottom:2px solid transparent;padding:10px 18px;font-size:13px;color:#888;cursor:pointer;margin-bottom:-1px;transition:all .15s;font-family:inherit;}
+.tab-btn:hover{color:#1a1a1a;}
+.tab-btn.active{color:#1a1a1a;border-bottom-color:#1a1a1a;font-weight:500;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem;}
+@media(max-width:800px){.grid-4{grid-template-columns:repeat(2,1fr);}}
+.metric-card{background:#fff;border-radius:12px;border:1px solid #e5e5e3;padding:1rem 1.25rem;}
+.metric-label{font-size:12px;color:#888;margin-bottom:4px;}
+.metric-value{font-size:26px;font-weight:700;font-family:'SF Mono',ui-monospace,monospace;letter-spacing:-.02em;}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.section-title{font-size:13px;font-weight:600;color:#444;}
+.section-count{font-size:12px;color:#aaa;}
+.artist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
+.artist-card{background:#fff;border:1px solid #e5e5e3;border-radius:12px;padding:1rem 1.25rem;}
+.artist-card.close{border-color:#fcd34d;background:#fffdf5;}
+.artist-card.hit{border-color:#86efac;background:#f0fdf4;}
+.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.artist-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.artist-id{font-size:11px;color:#bbb;margin-top:1px;}
+.song-count{font-size:20px;font-weight:700;font-family:'SF Mono',ui-monospace,monospace;text-align:right;line-height:1;}
+.song-label{font-size:10px;color:#aaa;text-align:right;}
+.badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px;margin-bottom:6px;}
+.badge-warn{background:#fef3c7;color:#92400e;}
+.badge-success{background:#dcfce7;color:#166534;}
+.badge-info{background:#dbeafe;color:#1e40af;}
+.progress-labels{display:flex;justify-content:space-between;font-size:10px;color:#ccc;margin-bottom:2px;}
+.progress-track{height:4px;background:#f0f0ee;border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:2px;transition:width .5s;}
+.card-actions{display:flex;gap:6px;margin-top:10px;}
+button{background:#fff;border:1px solid #d5d5d3;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;color:#1a1a1a;transition:background .1s;}
+button:hover{background:#f5f5f3;}
+button:active{transform:scale(.98);}
+.btn-primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
+.btn-primary:hover{background:#333;}
+.btn-sm{padding:5px 10px;font-size:11px;}
+.section-card{background:#fff;border:1px solid #e5e5e3;border-radius:12px;padding:1.25rem;margin-bottom:1rem;}
+input,select{width:100%;border:1px solid #e5e5e3;border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none;transition:border .15s;}
+input:focus,select:focus{border-color:#1a1a1a;}
+label{font-size:12px;color:#888;display:block;margin-bottom:4px;}
+ol{padding-left:1.2rem;}
+ol li{font-size:13px;line-height:1.7;margin-bottom:8px;}
+.nard-card{background:#fff;border:1px solid #e5e5e3;border-radius:12px;padding:1.25rem;margin-bottom:1rem;}
+.nard-note{background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:1.25rem;margin-bottom:1rem;}
+.nard-note p{color:#166534;font-size:13px;line-height:1.7;}
+.spinner{display:inline-block;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.sync-info{font-size:11px;color:#aaa;}
+.search-bar{width:100%;max-width:320px;margin-bottom:1rem;}
+.filter-row{display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap;}
+.empty{text-align:center;padding:3rem;color:#aaa;font-size:14px;}
+.divider{height:1px;background:#f0f0ee;margin:1.5rem 0;}
+@media(max-width:600px){.container{padding:1rem;}.topbar{padding:0 1rem;}}
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div style="display:flex;align-items:center;gap:10px;">
+  <div class="topbar-left">
     <span style="font-size:18px;">🎵</span>
     <h1>Songfinch Milestone Tracker</h1>
   </div>
@@ -88,15 +90,56 @@
   <!-- DASHBOARD -->
   <div id="panel-dashboard" class="panel">
     <div class="grid-4" id="dash-metrics"></div>
-    <div id="dash-alerts" style="margin-bottom:1rem;"></div>
-    <div class="artist-grid" id="dash-artists"></div>
+
+    <div id="close-section" style="margin-bottom:1.5rem;display:none;">
+      <div class="section-head">
+        <span class="section-title">🔥 Near a milestone</span>
+        <span class="section-count" id="close-count"></span>
+      </div>
+      <div class="artist-grid" id="dash-close"></div>
+    </div>
+
+    <div class="divider" id="dash-divider" style="display:none;"></div>
+
+    <div id="all-section">
+      <div class="section-head">
+        <span class="section-title">All artists</span>
+        <span class="section-count" id="all-count"></span>
+      </div>
+      <div class="filter-row">
+        <input class="search-bar" type="text" id="search" placeholder="Search artists..." oninput="renderAll()" style="width:220px;">
+        <select id="filter-milestone" onchange="renderAll()" style="width:180px;">
+          <option value="">All milestones</option>
+          <option value="5">Near 5</option>
+          <option value="10">Near 10</option>
+          <option value="15">Near 15</option>
+          <option value="25">Near 25</option>
+          <option value="50">Near 50</option>
+          <option value="100">Near 100</option>
+          <option value="500">Near 500</option>
+          <option value="1000">Near 1,000</option>
+          <option value="1500">Near 1,500</option>
+          <option value="2000">Near 2,000</option>
+        </select>
+        <select id="filter-sort" onchange="renderAll()" style="width:160px;">
+          <option value="closest">Closest to milestone</option>
+          <option value="most">Most songs</option>
+          <option value="least">Least songs</option>
+          <option value="alpha">A → Z</option>
+        </select>
+      </div>
+      <div class="artist-grid" id="dash-artists"></div>
+      <div id="load-more-wrap" style="text-align:center;margin-top:1rem;display:none;">
+        <button onclick="showMore()">Show more artists</button>
+      </div>
+    </div>
   </div>
 
   <!-- NARDWUAR -->
   <div id="panel-nardwuar" class="panel" style="display:none;">
     <div class="section-card">
-      <div class="section-title">Select artist to research</div>
-      <select id="sel-artist" onchange="selectNard(this.value)" style="max-width:360px;"></select>
+      <label>Select artist to research</label>
+      <select id="sel-artist" onchange="selectNard(this.value)" style="max-width:400px;"></select>
     </div>
     <div id="nard-content"></div>
   </div>
@@ -105,17 +148,17 @@
   <div id="panel-settings" class="panel" style="display:none;">
     <div style="max-width:520px;">
       <div class="section-card">
-        <div class="section-title">Google Sheet CSV URL</div>
-        <input type="text" id="cfg-csv" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?...output=csv">
+        <label style="font-size:13px;font-weight:600;color:#444;margin-bottom:8px;">Google Sheet CSV URL</label>
+        <input type="text" id="cfg-csv" placeholder="https://docs.google.com/spreadsheets/...output=csv">
         <p style="font-size:11px;color:#aaa;margin-top:6px;">File → Share → Publish to web → CSV → copy URL</p>
       </div>
       <div class="section-card">
-        <div class="section-title">Slack webhook URL (free)</div>
+        <label style="font-size:13px;font-weight:600;color:#444;margin-bottom:8px;">Slack webhook URL (free)</label>
         <input type="text" id="cfg-slack" placeholder="https://hooks.slack.com/services/...">
-        <p style="font-size:11px;color:#aaa;margin-top:6px;"><a href="https://api.slack.com/messaging/webhooks" target="_blank" style="color:#2563eb;">Create a free incoming webhook →</a></p>
+        <p style="font-size:11px;margin-top:6px;"><a href="https://api.slack.com/messaging/webhooks" target="_blank" style="color:#2563eb;">Create a free incoming webhook →</a></p>
       </div>
       <div class="section-card">
-        <div class="section-title">Alert threshold</div>
+        <label style="font-size:13px;font-weight:600;color:#444;margin-bottom:4px;">Alert threshold</label>
         <p style="font-size:12px;color:#888;margin-bottom:12px;">Flag artists within this many songs of a milestone</p>
         <div style="display:flex;align-items:center;gap:14px;">
           <input type="range" id="cfg-thresh" min="1" max="20" value="5" step="1" style="flex:1;width:auto;" oninput="document.getElementById('thresh-out').textContent=this.value+' songs'">
@@ -130,13 +173,13 @@
 <script>
 const DEFAULT_CSV='https://docs.google.com/spreadsheets/d/e/2PACX-1vT2qHbguGnVQK1aLrQ5Cq7ZElW0o-p9F4Gc9AX0QuBQV3reg8R94lC_gy9X2JDbZBUXHPu7Ef0WGYkC/pub?gid=0&single=true&output=csv';
 const MILESTONES=[5,10,15,25,50,100,500,1000,1500,2000];
-const AVATARCOLORS=[['#dbeafe','#1e40af'],['#dcfce7','#166534'],['#ede9fe','#4c1d95'],['#fce7f3','#831843'],['#fef3c7','#78350f'],['#fee2e2','#7f1d1d'],['#cffafe','#164e63'],['#d1fae5','#065f46']];
-
+const SKIP_NAMES=['artist_name','artist name','name','artistname'];
+const COLORS=[['#dbeafe','#1e40af'],['#dcfce7','#166534'],['#ede9fe','#4c1d95'],['#fce7f3','#831843'],['#fef3c7','#78350f'],['#fee2e2','#7f1d1d'],['#cffafe','#164e63'],['#d1fae5','#065f46'],['#fef9c3','#713f12'],['#f3e8ff','#581c87']];
 let cfg={csvUrl:DEFAULT_CSV,slackWebhook:'',alertThreshold:5};
-let artists=[],insights={},nardIdx=null;
+let artists=[],insights={},nardIdx=null,visibleCount=60;
 
-function loadCfg(){try{const s=localStorage.getItem('sf_cfg');if(s)cfg={...cfg,...JSON.parse(s)};}catch{}}
-function saveCfg(){try{localStorage.setItem('sf_cfg',JSON.stringify(cfg));}catch{}}
+function loadCfg(){try{const s=localStorage.getItem('sf_cfg_v2');if(s)cfg={...cfg,...JSON.parse(s)};}catch{}}
+function saveCfg(){try{localStorage.setItem('sf_cfg_v2',JSON.stringify(cfg));}catch{}}
 
 function mi(count){
   const next=MILESTONES.find(m=>m>count)??null;
@@ -145,14 +188,24 @@ function mi(count){
   const pct=next!==null?Math.min(100,Math.max(0,Math.round(((count-prev)/(next-prev))*100))):100;
   return{next,prev,diff,pct};
 }
-function col(i){return AVATARCOLORS[i%AVATARCOLORS.length];}
-function ini(n){return(n||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);}
+function col(i){return COLORS[i%COLORS.length];}
+function ini(n){return(n||'?').split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2)||'?';}
+function isHeaderRow(r){
+  const name=(r[1]||'').toLowerCase().trim();
+  return SKIP_NAMES.includes(name)||name==='';
+}
 
 function parseCSV(text){
-  return text.trim().split('\n').map(r=>{
+  return text.trim().split('\n').map(row=>{
     const cols=[];let cur='',inQ=false;
-    for(let i=0;i<r.length;i++){const c=r[i];if(c==='"'){inQ=!inQ;}else if(c===','&&!inQ){cols.push(cur.trim());cur='';}else{cur+=c;}}
-    cols.push(cur.trim());return cols;
+    for(let i=0;i<row.length;i++){
+      const c=row[i];
+      if(c==='"'){inQ=!inQ;}
+      else if(c===','&&!inQ){cols.push(cur.trim());cur='';}
+      else{cur+=c;}
+    }
+    cols.push(cur.trim());
+    return cols;
   });
 }
 
@@ -162,18 +215,71 @@ async function loadSheet(){
     const res=await fetch(cfg.csvUrl||DEFAULT_CSV);
     if(!res.ok)throw new Error('HTTP '+res.status);
     const text=await res.text();
-    const rows=parseCSV(text).slice(1).filter(r=>r[0]||r[1]);
-    artists=rows.map((r,i)=>({
-      idx:i,id:(r[0]||'').trim(),
-      name:(r[1]||'Unknown').trim(),
-      count:parseInt((r[10]||'0').replace(/,/g,''))||0
-    })).filter(a=>a.name&&a.name!=='Unknown');
+    const rows=parseCSV(text);
+    artists=rows
+      .filter(r=>!isHeaderRow(r))
+      .filter(r=>(r[1]||'').trim().length>0)
+      .map((r,i)=>({
+        idx:i,
+        id:(r[0]||'').toString().trim(),
+        name:(r[1]||'').trim(),
+        count:parseInt((r[10]||'0').replace(/,/g,'').replace(/[^0-9]/g,''))||0
+      }))
+      .filter(a=>a.name.length>0);
     document.getElementById('sync-info').textContent='Synced '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-    renderDash();renderNardSelect();
+    visibleCount=60;
+    renderDash();
+    renderNardSelect();
   }catch(e){
     document.getElementById('sync-info').textContent='Sync failed';
-    document.getElementById('dash-artists').innerHTML=`<div style="grid-column:1/-1;background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;padding:1.5rem;"><p style="color:#b91c1c;font-weight:500;margin-bottom:6px;">Could not load sheet</p><p style="color:#b91c1c;font-size:12px;">${e.message}</p></div>`;
+    document.getElementById('dash-artists').innerHTML=`<div style="grid-column:1/-1;background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;padding:1.5rem;"><p style="color:#b91c1c;font-weight:600;margin-bottom:4px;">Could not load sheet</p><p style="color:#b91c1c;font-size:12px;">${e.message}</p></div>`;
   }
+}
+
+function getFiltered(){
+  const q=(document.getElementById('search')?.value||'').toLowerCase();
+  const mf=document.getElementById('filter-milestone')?.value||'';
+  const sort=document.getElementById('filter-sort')?.value||'closest';
+  let list=artists.filter(a=>!q||a.name.toLowerCase().includes(q)||a.id.includes(q));
+  if(mf){const m=parseInt(mf);list=list.filter(a=>{const{next}=mi(a.count);return next===m;});}
+  list.sort((a,b)=>{
+    if(sort==='most')return b.count-a.count;
+    if(sort==='least')return a.count-b.count;
+    if(sort==='alpha')return a.name.localeCompare(b.name);
+    return(mi(a.count).diff||9999)-(mi(b.count).diff||9999);
+  });
+  return list;
+}
+
+function artistCardHTML(a){
+  const info=mi(a.count);const[bg,tx]=col(a.idx);
+  const t=cfg.alertThreshold;
+  const isHit=MILESTONES.includes(a.count);
+  const isClose=info.next&&info.diff<=t;
+  const barClr=isHit?'#22c55e':isClose?'#ef4444':info.pct>=80?'#f59e0b':'#3b82f6';
+  return`<div class="artist-card${isHit?' hit':isClose?' close':''}">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <div class="avatar" style="background:${bg};color:${tx};">${ini(a.name)}</div>
+      <div style="flex:1;min-width:0;">
+        <div class="artist-name">${a.name}</div>
+        <div class="artist-id">ID: ${a.id}</div>
+      </div>
+      <div>
+        <div class="song-count">${a.count.toLocaleString()}</div>
+        <div class="song-label">songs</div>
+      </div>
+    </div>
+    ${isHit?'<span class="badge badge-success">Milestone hit!</span>':''}
+    ${isClose&&!isHit?`<span class="badge badge-warn">${info.diff} away from ${info.next}</span>`:''}
+    ${info.next?`
+      <div class="progress-labels"><span>${info.prev}</span><span>${info.pct}%</span><span>${info.next}</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:${info.pct}%;background:${barClr};"></div></div>
+    `:`<p style="font-size:11px;color:#16a34a;margin-top:2px;">All milestones achieved!</p>`}
+    <div class="card-actions">
+      <button style="flex:1;" onclick="slackOne(${a.idx})">Slack →</button>
+      <button style="flex:1;" onclick="openNard(${a.idx})">Nardwuar →</button>
+    </div>
+  </div>`;
 }
 
 function renderDash(){
@@ -183,57 +289,36 @@ function renderDash(){
   const total=artists.reduce((s,a)=>s+a.count,0);
 
   document.getElementById('dash-metrics').innerHTML=`
-    <div class="metric-card"><div class="label">Artists on roster</div><div class="value">${artists.length}</div></div>
-    <div class="metric-card"><div class="label">Near milestone</div><div class="value" style="color:${close.length?'#d97706':'inherit'}">${close.length}</div></div>
-    <div class="metric-card"><div class="label">Milestones hit</div><div class="value" style="color:#16a34a">${hits.length}</div></div>
-    <div class="metric-card"><div class="label">Total songs</div><div class="value">${total.toLocaleString()}</div></div>
+    <div class="metric-card"><div class="metric-label">Artists on roster</div><div class="metric-value">${artists.length.toLocaleString()}</div></div>
+    <div class="metric-card"><div class="metric-label">Near milestone</div><div class="metric-value" style="color:${close.length?'#d97706':'inherit'}">${close.length.toLocaleString()}</div></div>
+    <div class="metric-card"><div class="metric-label">Milestones hit</div><div class="metric-value" style="color:#16a34a">${hits.length.toLocaleString()}</div></div>
+    <div class="metric-card"><div class="metric-label">Total songs</div><div class="metric-value">${total.toLocaleString()}</div></div>
   `;
 
-  document.getElementById('dash-alerts').innerHTML=close.map(a=>{
-    const{diff,next}=mi(a.count);
-    return`<div class="alert-bar">
-      <span class="msg">${a.name} — ${diff} song${diff===1?'':'s'} from <strong>${next}</strong></span>
-      <div style="display:flex;gap:6px;">
-        <button class="btn-sm" onclick="slackOne(${a.idx})">Slack →</button>
-        <button class="btn-sm" onclick="openNard(${a.idx})">Nardwuar →</button>
-      </div>
-    </div>`;
-  }).join('');
-
-  const sorted=[...artists].sort((a,b)=>(mi(a.count).diff||9999)-(mi(b.count).diff||9999));
-  if(!sorted.length){document.getElementById('dash-artists').innerHTML='<div class="empty-state">No artists loaded yet.</div>';return;}
-
-  document.getElementById('dash-artists').innerHTML=sorted.map(a=>{
-    const info=mi(a.count);const[bg,tx]=col(a.idx);
-    const isHit=MILESTONES.includes(a.count);
-    const isClose=info.next&&info.diff<=t;
-    const barClr=isHit?'#22c55e':isClose?'#ef4444':info.pct>=80?'#f59e0b':'#3b82f6';
-    return`<div class="artist-card${isHit?' hit':isClose?' close':''}">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-        <div class="avatar" style="background:${bg};color:${tx};">${ini(a.name)}</div>
-        <div style="flex:1;min-width:0;">
-          <div class="artist-name">${a.name}</div>
-          <div class="artist-id">ID: ${a.id}</div>
-        </div>
-        <div>
-          <div class="song-count">${a.count.toLocaleString()}</div>
-          <div class="song-label">songs</div>
-        </div>
-      </div>
-      ${isHit?'<span class="badge badge-success">Milestone hit!</span>':''}
-      ${isClose&&!isHit?`<span class="badge badge-warn">${info.diff} away from ${info.next}</span>`:''}
-      ${info.next?`
-        <div class="progress-wrap">
-          <div class="progress-labels"><span>${info.prev}</span><span>${info.pct}%</span><span>${info.next}</span></div>
-          <div class="progress-track"><div class="progress-fill" style="width:${info.pct}%;background:${barClr};"></div></div>
-        </div>`:`<p style="font-size:12px;color:#16a34a;margin-top:4px;">All milestones achieved!</p>`}
-      <div class="card-actions">
-        <button style="flex:1;" onclick="slackOne(${a.idx})">Slack →</button>
-        <button style="flex:1;" onclick="openNard(${a.idx})">Nardwuar →</button>
-      </div>
-    </div>`;
-  }).join('');
+  const closeSection=document.getElementById('close-section');
+  const closeSorted=[...close].sort((a,b)=>mi(a.count).diff-mi(b.count).diff);
+  if(close.length){
+    closeSection.style.display='block';
+    document.getElementById('close-count').textContent=close.length+' artists';
+    document.getElementById('dash-close').innerHTML=closeSorted.map(artistCardHTML).join('');
+    document.getElementById('dash-divider').style.display='block';
+  }else{
+    closeSection.style.display='none';
+    document.getElementById('dash-divider').style.display='none';
+  }
+  renderAll();
 }
+
+function renderAll(){
+  const list=getFiltered();
+  const shown=list.slice(0,visibleCount);
+  document.getElementById('all-count').textContent=list.length.toLocaleString()+' artists';
+  document.getElementById('dash-artists').innerHTML=shown.length?shown.map(artistCardHTML).join(''):`<div class="empty">No artists match your search.</div>`;
+  const lmw=document.getElementById('load-more-wrap');
+  lmw.style.display=list.length>visibleCount?'block':'none';
+}
+
+function showMore(){visibleCount+=60;renderAll();}
 
 function switchTab(t){
   document.querySelectorAll('.panel').forEach(p=>p.style.display='none');
@@ -261,34 +346,34 @@ function renderNardContent(){
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;">
         <div class="avatar" style="width:48px;height:48px;font-size:16px;background:${bg};color:${tx};">${ini(a.name)}</div>
         <div>
-          <div style="font-size:18px;font-weight:600;">${a.name}</div>
-          <div style="font-size:13px;color:#888;">${a.count.toLocaleString()} songs · ${info.next?info.diff+' from next milestone ('+info.next+')':'all milestones hit!'}</div>
+          <div style="font-size:18px;font-weight:700;">${a.name}</div>
+          <div style="font-size:13px;color:#888;margin-top:2px;">${a.count.toLocaleString()} songs · ${info.next?info.diff+' from next milestone ('+info.next+')':'all milestones hit!'}</div>
         </div>
       </div>
       <button id="nard-btn" class="btn-primary" onclick="generateInsights()" style="width:100%;padding:10px;">${data?'Regenerate intel →':'Generate Nardwuar intel →'}</button>
-      <p style="font-size:11px;color:#aaa;margin-top:6px;">AI-generated — verify fun facts before sending to the artist</p>
+      <p style="font-size:11px;color:#aaa;margin-top:6px;">AI-generated — always verify fun facts before sending to the artist</p>
     </div>
     ${data?renderInsights(data,a):''}`;
 }
 
 function renderInsights(data,a){
-  if(data.error)return`<p style="color:#b91c1c;font-size:13px;padding:.5rem;">${data.error}</p>`;
+  if(data.error)return`<p style="color:#b91c1c;font-size:13px;padding:.5rem 0;">${data.error}</p>`;
   return`
-    <div class="nard-fact-card">
+    <div class="nard-card">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-        <div class="section-title" style="margin:0;">Obscure fun facts</div>
+        <span style="font-size:13px;font-weight:600;color:#444;">Obscure fun facts</span>
         ${data.confidence?`<span class="badge badge-info">${data.confidence} confidence</span>`:''}
       </div>
       <ol>${(data.facts||[]).map(f=>`<li>${f}</li>`).join('')}</ol>
     </div>
-    <div class="nard-fact-card">
-      <div class="section-title">Personalized gift ideas</div>
+    <div class="nard-card">
+      <div style="font-size:13px;font-weight:600;color:#444;margin-bottom:12px;">Personalized gift ideas</div>
       <ol>${(data.gifts||[]).map(g=>`<li>${g}</li>`).join('')}</ol>
     </div>
-    ${data.note?`<div class="nard-note-card">
-      <div class="section-title" style="color:#166534;">Personalized celebration note</div>
-      <p style="font-size:13px;line-height:1.7;margin-bottom:12px;">${data.note}</p>
-      <button onclick="composeEmail(${a.idx})">Open in email client →</button>
+    ${data.note?`<div class="nard-note">
+      <div style="font-size:13px;font-weight:600;color:#166534;margin-bottom:8px;">Personalized celebration note</div>
+      <p>${data.note}</p>
+      <button onclick="composeEmail(${a.idx})" style="margin-top:12px;">Open in email client →</button>
     </div>`:''}`;
 }
 
@@ -301,7 +386,7 @@ async function generateInsights(){
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-sonnet-4-20250514',max_tokens:1000,
-        messages:[{role:'user',content:`You are like Nardwuar the Human Serviette — legendary music researcher with incredibly specific, obscure, verifiable knowledge.\n\nArtist: "${a.name}"\nSongs completed: ${a.count}\n\nGenerate a research package. Respond ONLY in valid JSON, no markdown:\n{"facts":["obscure TRUE verifiable fact about their background","surprising lesser-known achievement or story","specific quirky detail only a super-fan would know"],"gifts":["Gift 1 with reason it suits them","Gift 2 with reason","Gift 3 with reason","Gift 4 with reason","Gift 5 with reason"],"note":"Warm 2-sentence celebration note from the label team","confidence":"high / medium / low"}`}]
+        messages:[{role:'user',content:`You are like Nardwuar the Human Serviette — legendary music researcher with incredibly specific, obscure, verifiable knowledge. You dig deep and love surprising people.\n\nArtist: "${a.name}"\nSongs completed on platform: ${a.count}\n\nGenerate a research package. Respond ONLY in valid JSON with no markdown fences:\n{"facts":["Obscure but TRUE verifiable fact about their background or early career","Surprising lesser-known achievement, connection, or story","Specific quirky personal detail only a super-fan would know"],"gifts":["Specific thoughtful gift with brief personal reason","Gift 2 with reason","Gift 3 with reason","Gift 4 with reason","Gift 5 with reason"],"note":"Warm personal 2-sentence celebration note from the Songfinch team marking this milestone","confidence":"high / medium / low"}`}]
       })
     });
     const d=await res.json();
@@ -319,31 +404,34 @@ function composeEmail(idx){
 }
 
 async function slackOne(idx){
-  if(!cfg.slackWebhook){showToast('Add Slack webhook in Settings first','warn');return;}
+  if(!cfg.slackWebhook){alert('Add your Slack webhook in Settings first.');return;}
   const a=artists.find(x=>x.idx==idx);if(!a)return;
-  const info=mi(a.count);const isHit=MILESTONES.includes(a.count);const isClose=info.next&&info.diff<=cfg.alertThreshold;
+  const info=mi(a.count);
+  const isHit=MILESTONES.includes(a.count);
+  const isClose=info.next&&info.diff<=cfg.alertThreshold;
   const text=isHit
     ?`🎉 *MILESTONE HIT!* *${a.name}* just completed their *${a.count}th song!* Time to celebrate.`
-    :isClose?`🚨 *MILESTONE ALERT* — *${a.name}* is only *${info.diff} song${info.diff===1?'':'s'} away* from their *${info.next} songs milestone!* Start prepping.`
-    :`📊 *${a.name}* — ${a.count.toLocaleString()} songs (${info.pct}% to ${info.next})`;
+    :isClose?`🚨 *MILESTONE ALERT* — *${a.name}* is only *${info.diff} song${info.diff===1?'':'s'} away* from their *${info.next} songs milestone!* Start prepping something special.`
+    :`📊 *${a.name}* — ${a.count.toLocaleString()} songs completed (${info.pct}% to ${info.next})`;
   try{await fetch(cfg.slackWebhook,{method:'POST',mode:'no-cors',body:JSON.stringify({text})});showToast('Slack alert sent!');}
   catch{showToast('Slack failed — check webhook URL','error');}
 }
 
 async function sendDailyDigest(){
-  if(!cfg.slackWebhook){showToast('Add Slack webhook in Settings first','warn');return;}
+  if(!cfg.slackWebhook){alert('Add your Slack webhook in Settings first.');return;}
   if(!artists.length){showToast('No artists loaded — hit Refresh first','warn');return;}
   const t=cfg.alertThreshold;
   const close=artists.filter(a=>{const{diff,next}=mi(a.count);return next&&diff<=t;});
   const hits=artists.filter(a=>MILESTONES.includes(a.count));
   const lines=[`📋 *Daily Milestone Digest* — ${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}`,''];
   if(hits.length){lines.push('🎉 *Milestones hit:*');hits.forEach(a=>lines.push(`  • *${a.name}* — ${a.count} songs!`));lines.push('');}
-  if(close.length){lines.push('🔥 *Close to a milestone:*');close.forEach(a=>{const{diff,next}=mi(a.count);lines.push(`  • *${a.name}* — ${diff} song${diff===1?'':'s'} from ${next}`);});lines.push('');}
-  if(!hits.length&&!close.length){lines.push('✅ No artists near a milestone right now.\n');}
-  lines.push(`*Full roster (${artists.length} artists):*`);
-  artists.forEach(a=>{const info=mi(a.count);lines.push(`  • ${a.name} — ${a.count.toLocaleString()} songs · ${info.next?info.diff+' from '+info.next:'all milestones hit!'}`);});
-  try{await fetch(cfg.slackWebhook,{method:'POST',mode:'no-cors',body:JSON.stringify({text:lines.join('\n')})});showToast('Daily digest sent to Slack!');}
-  catch{showToast('Digest failed','error');}
+  if(close.length){lines.push(`🔥 *${close.length} artists near a milestone:*`);close.slice(0,20).forEach(a=>{const{diff,next}=mi(a.count);lines.push(`  • *${a.name}* — ${diff} song${diff===1?'':'s'} from ${next}`);});if(close.length>20)lines.push(`  ...and ${close.length-20} more`);lines.push('');}
+  if(!hits.length&&!close.length)lines.push('✅ No artists near a milestone right now.\n');
+  lines.push(`*Roster: ${artists.length.toLocaleString()} artists · ${artists.reduce((s,a)=>s+a.count,0).toLocaleString()} total songs*`);
+  try{
+    await fetch(cfg.slackWebhook,{method:'POST',mode:'no-cors',body:JSON.stringify({text:lines.join('\n')})});
+    showToast('Daily digest sent to Slack!');
+  }catch{showToast('Digest failed','error');}
 }
 
 function applySettingsForm(){
@@ -363,10 +451,10 @@ function saveSettings(){
 
 function showToast(msg,type='success'){
   let el=document.getElementById('_toast');
-  if(!el){el=document.createElement('div');el.id='_toast';el.className='toast';document.body.appendChild(el);}
+  if(!el){el=document.createElement('div');el.id='_toast';el.style.cssText='position:fixed;bottom:24px;right:24px;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;transition:opacity .3s;max-width:320px;pointer-events:none;';document.body.appendChild(el);}
   const m={success:['#f0fdf4','#166534','#86efac'],warn:['#fffbeb','#92400e','#fcd34d'],error:['#fef2f2','#b91c1c','#fca5a5']};
   const[bg,tx,br]=m[type]||m.success;
-  el.style.cssText=`position:fixed;bottom:24px;right:24px;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;transition:opacity .3s;max-width:320px;pointer-events:none;background:${bg};color:${tx};border:1px solid ${br};opacity:1;`;
+  el.style.cssText+=`;background:${bg};color:${tx};border:1px solid ${br};opacity:1;`;
   el.textContent=msg;clearTimeout(el._t);el._t=setTimeout(()=>el.style.opacity='0',3500);
 }
 
