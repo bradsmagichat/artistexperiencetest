@@ -228,7 +228,8 @@ async function loadSheet(){
         idx:i,
         id:(r[0]||'').toString().trim(),
         name:(r[1]||'').trim(),
-        count:parseInt((r[10]||'0').replace(/,/g,'').replace(/[^0-9]/g,''))||0
+        count:parseInt((r[20]||'0').replace(/,/g,'').replace(/[^0-9]/g,''))||0,
+        location:(r[17]||'').trim()
       }))
       .filter(a=>a.name.length>0);
     document.getElementById('sync-info').textContent='Synced '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
@@ -352,7 +353,7 @@ function renderNardContent(){
         <div class="avatar" style="width:48px;height:48px;font-size:16px;background:${bg};color:${tx};">${ini(a.name)}</div>
         <div>
           <div style="font-size:18px;font-weight:700;">${a.name}</div>
-          <div style="font-size:13px;color:#888;margin-top:2px;">${a.count.toLocaleString()} songs · ${info.next?info.diff+' from next milestone ('+info.next+')':'all milestones hit!'}</div>
+          <div style="font-size:13px;color:#888;margin-top:2px;">${a.count.toLocaleString()} songs · ${a.location?a.location+' · ':''} ${info.next?info.diff+' from next milestone ('+info.next+')':'all milestones hit!'}</div>
         </div>
       </div>
       <button id="nard-btn" class="btn-primary" onclick="generateInsights()" style="width:100%;padding:10px;">${data?'Regenerate intel →':'Generate Nardwuar intel →'}</button>
@@ -366,10 +367,18 @@ function renderInsights(data,a){
   return`
     <div class="nard-card">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-        <span style="font-size:13px;font-weight:600;color:#444;">Obscure fun facts</span>
+        <span style="font-size:13px;font-weight:600;color:#444;">Fun facts</span>
         ${data.confidence?`<span class="badge badge-info">${data.confidence} confidence</span>`:''}
       </div>
-      <ol>${(data.facts||[]).map(f=>`<li>${f}</li>`).join('')}</ol>
+      <ol>${(data.facts||[]).map(f=>{
+        const isVerified=f.startsWith('VERIFIED:');
+        const isSuggested=f.startsWith('SUGGESTED:');
+        const color=isVerified?'#166534':isSuggested?'#92400e':'#444';
+        const tag=isVerified?'<span style="font-size:10px;font-weight:700;background:#dcfce7;color:#166534;padding:1px 5px;border-radius:4px;margin-right:4px;">VERIFIED</span>':isSuggested?'<span style="font-size:10px;font-weight:700;background:#fef3c7;color:#92400e;padding:1px 5px;border-radius:4px;margin-right:4px;">SUGGESTED</span>':'';
+        const text=f.replace(/^VERIFIED:\s*/,'').replace(/^SUGGESTED:\s*/,'');
+        return`<li style="color:${color};">${tag}${text}</li>`;
+      }).join('')}</ol>
+      <p style="font-size:11px;color:#aaa;margin-top:10px;">VERIFIED = high confidence · SUGGESTED = educated guess, verify before using</p>
     </div>
     <div class="nard-card">
       <div style="font-size:13px;font-weight:600;color:#444;margin-bottom:12px;">Personalized gift ideas</div>
@@ -384,19 +393,35 @@ function renderInsights(data,a){
 
 async function generateInsights(){
   const btn=document.getElementById('nard-btn');
-  if(btn){btn.textContent='Generating...';btn.disabled=true;}
+  if(btn){btn.textContent='Searching the web...';btn.disabled=true;}
   const a=artists.find(x=>x.idx===nardIdx);if(!a)return;
   const OPENAI_KEY=cfg.openaiKey||'';
   if(!OPENAI_KEY){insights[nardIdx]={error:'Add your OpenAI API key in Settings first.'};renderNardContent();return;}
   try{
+    const searchQuery=`${a.name} musician${a.location?' '+a.location:''}`;
+    const searchRes=await fetch(`https://api.openai.com/v1/chat/completions`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+OPENAI_KEY},
+      body:JSON.stringify({
+        model:'gpt-4o',max_tokens:600,
+        messages:[
+          {role:'system',content:'You are a music researcher. Search your knowledge for real, verifiable information about this artist. Be honest about what you know vs. don\'t know. Never make up facts. If you don\'t have reliable info, say so clearly.'},
+          {role:'user',content:`Tell me everything you know about the musician "${a.name}"${a.location?' from '+a.location:''}. Focus on: background, career highlights, personal interests, style, genre, any interesting stories or connections. Be specific and only include things you are confident are true. If this is a lesser-known or independent artist you don\'t have much data on, say that clearly rather than guessing.`}
+        ]
+      })
+    });
+    const searchData=await searchRes.json();
+    if(searchData.error)throw new Error(searchData.error.message);
+    const researchNotes=searchData.choices?.[0]?.message?.content||'No additional context found.';
+    if(btn)btn.textContent='Generating intel...';
     const res=await fetch('https://api.openai.com/v1/chat/completions',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+OPENAI_KEY},
       body:JSON.stringify({
         model:'gpt-4o',max_tokens:1000,
         messages:[
-          {role:'system',content:'You are like Nardwuar the Human Serviette — legendary music researcher with incredibly specific, obscure, verifiable knowledge. You dig deep and love surprising people with things they didn\'t know about themselves. Always respond only in valid JSON with no markdown fences.'},
-          {role:'user',content:`Artist: "${a.name}"\nSongs completed on our music platform: ${a.count}\n\nGenerate a research package as valid JSON only:\n{"facts":["Obscure but TRUE verifiable fact about their background or early career","Surprising lesser-known achievement, connection, or story","Specific quirky personal detail only a super-fan would know"],"gifts":["Specific thoughtful gift with brief personal reason why it suits them","Gift 2 with reason","Gift 3 with reason","Gift 4 with reason","Gift 5 with reason"],"note":"Warm personal 2-sentence celebration note from the Songfinch team marking this milestone","confidence":"high / medium / low"}`}
+          {role:'system',content:'You are like Nardwuar the Human Serviette — a music researcher who only states facts you are genuinely confident about. You clearly distinguish between verified facts and educated suggestions. You never fabricate. Always respond in valid JSON only, no markdown.'},
+          {role:'user',content:`Artist: "${a.name}"${a.location?' — Location: '+a.location:''}\nSongs completed on Songfinch platform: ${a.count}\n\nResearch notes from knowledge base:\n${researchNotes}\n\nBased ONLY on what is genuinely known above, generate a research package as JSON:\n{\n"facts": [\n  "VERIFIED: [fact you are highly confident is true, cite what makes you confident]",\n  "VERIFIED: [another confirmed fact] OR SUGGESTED: [educated guess based on genre/location/style — clearly labeled]",\n  "VERIFIED: [fact] OR SUGGESTED: [guess — labeled]"\n],\n"gifts": [\n  "Gift idea based on their real interests/background with specific reason",\n  "Gift 2", "Gift 3", "Gift 4", "Gift 5"\n],\n"note": "Warm 2-sentence celebration note from the Songfinch team for reaching ${a.count} songs",\n"confidence": "high if well-known artist with lots of data / medium if some info available / low if independent or lesser-known artist with limited public info"\n}`}
         ]
       })
     });
