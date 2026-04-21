@@ -153,6 +153,11 @@ ol li{font-size:13px;line-height:1.7;margin-bottom:8px;}
         <p style="font-size:11px;color:#aaa;margin-top:6px;">File → Share → Publish to web → CSV → copy URL</p>
       </div>
       <div class="section-card">
+        <label style="font-size:13px;font-weight:600;color:#444;margin-bottom:8px;">OpenAI API key (for Nardwuar lab)</label>
+        <input type="password" id="cfg-openai" placeholder="sk-proj-...">
+        <p style="font-size:11px;color:#aaa;margin-top:6px;"><a href="https://platform.openai.com/api-keys" target="_blank" style="color:#2563eb;">Get your key at platform.openai.com →</a></p>
+      </div>
+      <div class="section-card">
         <label style="font-size:13px;font-weight:600;color:#444;margin-bottom:8px;">Slack webhook URL (free)</label>
         <input type="text" id="cfg-slack" placeholder="https://hooks.slack.com/services/...">
         <p style="font-size:11px;margin-top:6px;"><a href="https://api.slack.com/messaging/webhooks" target="_blank" style="color:#2563eb;">Create a free incoming webhook →</a></p>
@@ -175,7 +180,7 @@ const DEFAULT_CSV='https://docs.google.com/spreadsheets/d/e/2PACX-1vT2qHbguGnVQK
 const MILESTONES=[5,10,15,25,50,100,500,1000,1500,2000];
 const SKIP_NAMES=['artist_name','artist name','name','artistname'];
 const COLORS=[['#dbeafe','#1e40af'],['#dcfce7','#166534'],['#ede9fe','#4c1d95'],['#fce7f3','#831843'],['#fef3c7','#78350f'],['#fee2e2','#7f1d1d'],['#cffafe','#164e63'],['#d1fae5','#065f46'],['#fef9c3','#713f12'],['#f3e8ff','#581c87']];
-let cfg={csvUrl:DEFAULT_CSV,slackWebhook:'',alertThreshold:5};
+let cfg={csvUrl:DEFAULT_CSV,slackWebhook:'',alertThreshold:5,openaiKey:'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'};
 let artists=[],insights={},nardIdx=null,visibleCount=60;
 
 function loadCfg(){try{const s=localStorage.getItem('sf_cfg_v2');if(s)cfg={...cfg,...JSON.parse(s)};}catch{}}
@@ -381,16 +386,23 @@ async function generateInsights(){
   const btn=document.getElementById('nard-btn');
   if(btn){btn.textContent='Generating...';btn.disabled=true;}
   const a=artists.find(x=>x.idx===nardIdx);if(!a)return;
+  const OPENAI_KEY=cfg.openaiKey||'';
+  if(!OPENAI_KEY){insights[nardIdx]={error:'Add your OpenAI API key in Settings first.'};renderNardContent();return;}
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
+    const res=await fetch('https://api.openai.com/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+OPENAI_KEY},
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',max_tokens:1000,
-        messages:[{role:'user',content:`You are like Nardwuar the Human Serviette — legendary music researcher with incredibly specific, obscure, verifiable knowledge. You dig deep and love surprising people.\n\nArtist: "${a.name}"\nSongs completed on platform: ${a.count}\n\nGenerate a research package. Respond ONLY in valid JSON with no markdown fences:\n{"facts":["Obscure but TRUE verifiable fact about their background or early career","Surprising lesser-known achievement, connection, or story","Specific quirky personal detail only a super-fan would know"],"gifts":["Specific thoughtful gift with brief personal reason","Gift 2 with reason","Gift 3 with reason","Gift 4 with reason","Gift 5 with reason"],"note":"Warm personal 2-sentence celebration note from the Songfinch team marking this milestone","confidence":"high / medium / low"}`}]
+        model:'gpt-4o',max_tokens:1000,
+        messages:[
+          {role:'system',content:'You are like Nardwuar the Human Serviette — legendary music researcher with incredibly specific, obscure, verifiable knowledge. You dig deep and love surprising people with things they didn\'t know about themselves. Always respond only in valid JSON with no markdown fences.'},
+          {role:'user',content:`Artist: "${a.name}"\nSongs completed on our music platform: ${a.count}\n\nGenerate a research package as valid JSON only:\n{"facts":["Obscure but TRUE verifiable fact about their background or early career","Surprising lesser-known achievement, connection, or story","Specific quirky personal detail only a super-fan would know"],"gifts":["Specific thoughtful gift with brief personal reason why it suits them","Gift 2 with reason","Gift 3 with reason","Gift 4 with reason","Gift 5 with reason"],"note":"Warm personal 2-sentence celebration note from the Songfinch team marking this milestone","confidence":"high / medium / low"}`}
+        ]
       })
     });
     const d=await res.json();
-    const txt=d.content?.find(b=>b.type==='text')?.text||'{}';
+    if(d.error)throw new Error(d.error.message);
+    const txt=d.choices?.[0]?.message?.content||'{}';
     insights[nardIdx]=JSON.parse(txt.replace(/```json|```/g,'').trim());
   }catch(e){insights[nardIdx]={error:'Generation failed — '+e.message};}
   renderNardContent();
@@ -436,7 +448,7 @@ async function sendDailyDigest(){
 
 function applySettingsForm(){
   const f=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
-  f('cfg-csv',cfg.csvUrl);f('cfg-slack',cfg.slackWebhook);
+  f('cfg-csv',cfg.csvUrl);f('cfg-slack',cfg.slackWebhook);f('cfg-openai',cfg.openaiKey);
   const t=document.getElementById('cfg-thresh');const o=document.getElementById('thresh-out');
   if(t){t.value=cfg.alertThreshold;if(o)o.textContent=cfg.alertThreshold+' songs';}
 }
@@ -444,6 +456,7 @@ function saveSettings(){
   cfg={
     csvUrl:(document.getElementById('cfg-csv').value||DEFAULT_CSV).trim(),
     slackWebhook:(document.getElementById('cfg-slack').value||'').trim(),
+    openaiKey:(document.getElementById('cfg-openai').value||'').trim(),
     alertThreshold:parseInt(document.getElementById('cfg-thresh').value)||5,
   };
   saveCfg();showToast('Settings saved!');loadSheet();
