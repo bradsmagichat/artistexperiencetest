@@ -397,31 +397,47 @@ async function generateInsights(){
   const a=artists.find(x=>x.idx===nardIdx);if(!a)return;
   const OPENAI_KEY=cfg.openaiKey||'';
   if(!OPENAI_KEY){insights[nardIdx]={error:'Add your OpenAI API key in Settings first.'};renderNardContent();return;}
+
+  const city=a.location?a.location.trim():'';
+  const searches=[
+    `${a.name} music${city?' '+city:''}`,
+    `${a.name} musician biography early life`,
+    `${a.name} singer songwriter${city?' '+city:''} background`,
+    `"${a.name}" music interview`,
+  ];
+
   try{
-    const searchQuery=`${a.name} musician${a.location?' '+a.location:''}`;
-    const searchRes=await fetch(`https://api.openai.com/v1/chat/completions`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+OPENAI_KEY},
-      body:JSON.stringify({
-        model:'gpt-4o',max_tokens:600,
-        messages:[
-          {role:'system',content:'You are a music researcher. Search your knowledge for real, verifiable information about this artist. Be honest about what you know vs. don\'t know. Never make up facts. If you don\'t have reliable info, say so clearly.'},
-          {role:'user',content:`Tell me everything you know about the musician "${a.name}"${a.location?' from '+a.location:''}. Focus on: background, career highlights, personal interests, style, genre, any interesting stories or connections. Be specific and only include things you are confident are true. If this is a lesser-known or independent artist you don\'t have much data on, say that clearly rather than guessing.`}
-        ]
-      })
-    });
-    const searchData=await searchRes.json();
-    if(searchData.error)throw new Error(searchData.error.message);
-    const researchNotes=searchData.choices?.[0]?.message?.content||'No additional context found.';
-    if(btn)btn.textContent='Generating intel...';
+    let allResearch='';
+    for(const q of searches){
+      if(btn)btn.textContent=`Searching: "${q}"...`;
+      try{
+        const r=await fetch('https://api.openai.com/v1/responses',{
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':'Bearer '+OPENAI_KEY},
+          body:JSON.stringify({
+            model:'gpt-4o-mini-search-preview',
+            tools:[{type:'web_search_preview',search_context_size:'high'}],
+            input:`Search for: ${q}\n\nFind everything you can about this musician — early life, hometown, family, schooling, first instruments, first bands, career milestones, influences, personal interests, hobbies, fun facts, social presence, awards, collaborations. Go all the way back like a deep biographer would. Be specific, not generic.`
+          })
+        });
+        const d=await r.json();
+        if(d.error)continue;
+        const txt=d.output?.find(b=>b.type==='message')?.content?.find(c=>c.type==='output_text')?.text||'';
+        if(txt)allResearch+=`\n\n--- Search: "${q}" ---\n${txt}`;
+      }catch{}
+    }
+
+    if(!allResearch)throw new Error('Web search returned no results — check your API key has web search access.');
+
+    if(btn)btn.textContent='Synthesizing intel...';
     const res=await fetch('https://api.openai.com/v1/chat/completions',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+OPENAI_KEY},
       body:JSON.stringify({
-        model:'gpt-4o',max_tokens:1000,
+        model:'gpt-4o',max_tokens:1200,
         messages:[
-          {role:'system',content:'You are like Nardwuar the Human Serviette — a music researcher who only states facts you are genuinely confident about. You clearly distinguish between verified facts and educated suggestions. You never fabricate. Always respond in valid JSON only, no markdown.'},
-          {role:'user',content:`Artist: "${a.name}"${a.location?' — Location: '+a.location:''}\nSongs completed on Songfinch platform: ${a.count}\n\nResearch notes from knowledge base:\n${researchNotes}\n\nBased ONLY on what is genuinely known above, generate a research package as JSON:\n{\n"facts": [\n  "VERIFIED: [fact you are highly confident is true, cite what makes you confident]",\n  "VERIFIED: [another confirmed fact] OR SUGGESTED: [educated guess based on genre/location/style — clearly labeled]",\n  "VERIFIED: [fact] OR SUGGESTED: [guess — labeled]"\n],\n"gifts": [\n  "Gift idea based on their real interests/background with specific reason",\n  "Gift 2", "Gift 3", "Gift 4", "Gift 5"\n],\n"note": "Warm 2-sentence celebration note from the Songfinch team for reaching ${a.count} songs",\n"confidence": "high if well-known artist with lots of data / medium if some info available / low if independent or lesser-known artist with limited public info"\n}`}
+          {role:'system',content:`You are Nardwuar the Human Serviette — the greatest music researcher alive. You dig DEEP. You find things people forgot about themselves — their first band name, their high school, their childhood town, their first instrument, their parents' jobs, early YouTube videos, old SoundCloud accounts, local news features, obscure collaborations. You go ALL the way back. You only state things you found from real sources. You clearly label VERIFIED (from a real source) vs SUGGESTED (inferred). Never fabricate. Respond only in valid JSON, no markdown.`},
+          {role:'user',content:`Artist: "${a.name}"${city?' — from '+city:''}\nSongs on Songfinch: ${a.count}\n\nReal web research gathered:\n${allResearch}\n\nNow synthesize a full Nardwuar-style intel package as JSON only:\n{\n"facts":[\n"VERIFIED: [specific fact from web research — the more obscure and specific the better]",\n"VERIFIED: [another real fact — go back as far as possible, childhood, first band, school, hometown details]",\n"VERIFIED: [a third real fact] OR SUGGESTED: [clearly labeled inference if insufficient data]"\n],\n"gifts":[\n"[Hyper-specific gift tied to a real fact about them — not generic. e.g. if they grew up in Austin, a vintage Austin music scene poster. If they played violin first, a rare vintage rosin. Be creative and personal.]",\n"Gift 2","Gift 3","Gift 4","Gift 5"\n],\n"note":"Warm, specific, personal 2-sentence celebration note from Songfinch referencing something real about their journey",\n"confidence":"high / medium / low — based on how much real data was found"\n}`}
         ]
       })
     });
