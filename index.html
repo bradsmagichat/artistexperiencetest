@@ -408,26 +408,55 @@ async function generateInsights(){
 
   try{
     let allResearch='';
+
+    // Try web search first (gpt-4o-search-preview), fall back to knowledge-only
     for(const q of searches){
       if(btn)btn.textContent=`Searching: "${q}"...`;
       try{
-        const r=await fetch('https://api.openai.com/v1/responses',{
+        const r=await fetch('https://api.openai.com/v1/chat/completions',{
           method:'POST',
           headers:{'Content-Type':'application/json','Authorization':'Bearer '+OPENAI_KEY},
           body:JSON.stringify({
-            model:'gpt-4o-mini-search-preview',
-            tools:[{type:'web_search_preview',search_context_size:'high'}],
-            input:`Search for: ${q}\n\nFind everything you can about this musician — early life, hometown, family, schooling, first instruments, first bands, career milestones, influences, personal interests, hobbies, fun facts, social presence, awards, collaborations. Go all the way back like a deep biographer would. Be specific, not generic.`
+            model:'gpt-4o-search-preview',
+            web_search_options:{search_context_size:'high'},
+            messages:[{
+              role:'user',
+              content:`Search for information about the musician "${a.name}"${city?' from '+city:''}. Find: early life, hometown, family background, schooling, first instruments, first bands, career milestones, influences, personal interests, hobbies, fun facts, social media presence, awards, notable collaborations. Go all the way back. Be specific, not generic.`
+            }]
           })
         });
         const d=await r.json();
-        if(d.error)continue;
-        const txt=d.output?.find(b=>b.type==='message')?.content?.find(c=>c.type==='output_text')?.text||'';
+        if(d.error){
+          // If search model not available, fall through to knowledge-only
+          if(d.error.code==='model_not_found'||d.error.type==='invalid_request_error') break;
+          continue;
+        }
+        const txt=d.choices?.[0]?.message?.content||'';
         if(txt)allResearch+=`\n\n--- Search: "${q}" ---\n${txt}`;
       }catch{}
     }
 
-    if(!allResearch)throw new Error('Web search returned no results — check your API key has web search access.');
+    // If web search got nothing, fall back to GPT-4o knowledge mode
+    if(!allResearch){
+      if(btn)btn.textContent='Researching from knowledge base...';
+      try{
+        const r=await fetch('https://api.openai.com/v1/chat/completions',{
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':'Bearer '+OPENAI_KEY},
+          body:JSON.stringify({
+            model:'gpt-4o',max_tokens:800,
+            messages:[{
+              role:'user',
+              content:`Tell me everything you know about the musician "${a.name}"${city?' from '+city:''}. Include: early life, hometown, background, first instruments, first bands, career highlights, personal interests, style, genre, fun facts. Only state things you are genuinely confident are true. If this is a lesser-known independent artist with limited public info, say so clearly rather than guessing.`
+            }]
+          })
+        });
+        const d=await r.json();
+        if(!d.error) allResearch=d.choices?.[0]?.message?.content||'';
+      }catch{}
+    }
+
+    if(!allResearch) allResearch='Limited public information found for this artist.';
 
     if(btn)btn.textContent='Synthesizing intel...';
     const res=await fetch('https://api.openai.com/v1/chat/completions',{
