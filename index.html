@@ -1,547 +1,1438 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Songfinch Milestone Tracker</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Songfinch · Artist World</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f3;color:#1a1a1a;min-height:100vh;}
-.topbar{background:#fff;border-bottom:1px solid #e5e5e3;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
-.topbar-left{display:flex;align-items:center;gap:10px;}
-.topbar h1{font-size:15px;font-weight:600;}
-.topbar-right{display:flex;align-items:center;gap:10px;}
-.container{max-width:1200px;margin:0 auto;padding:1.5rem 2rem;}
-.tabs{display:flex;border-bottom:1px solid #e5e5e3;margin-bottom:1.5rem;}
-.tab-btn{background:none;border:none;border-bottom:2px solid transparent;padding:10px 18px;font-size:13px;color:#888;cursor:pointer;margin-bottom:-1px;transition:all .15s;font-family:inherit;}
-.tab-btn:hover{color:#1a1a1a;}
-.tab-btn.active{color:#1a1a1a;border-bottom-color:#1a1a1a;font-weight:500;}
-.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem;}
-@media(max-width:800px){.grid-4{grid-template-columns:repeat(2,1fr);}}
-.metric-card{background:#fff;border-radius:12px;border:1px solid #e5e5e3;padding:1rem 1.25rem;}
-.metric-label{font-size:12px;color:#888;margin-bottom:4px;}
-.metric-value{font-size:26px;font-weight:700;font-family:'SF Mono',ui-monospace,monospace;letter-spacing:-.02em;}
-.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-.section-title{font-size:13px;font-weight:600;color:#444;}
-.section-count{font-size:12px;color:#aaa;}
-.artist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
-.artist-card{background:#fff;border:1px solid #e5e5e3;border-radius:12px;padding:1rem 1.25rem;}
-.artist-card.close{border-color:#c4b5fd;background:#faf5ff;}
-.artist-card.hit{border-color:#86efac;background:#f0fdf4;}
-.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
-.artist-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.artist-id{font-size:11px;color:#bbb;margin-top:1px;}
-.song-count{font-size:20px;font-weight:700;font-family:'SF Mono',ui-monospace,monospace;text-align:right;line-height:1;}
-.song-label{font-size:10px;color:#aaa;text-align:right;}
-.badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px;margin-bottom:6px;}
-.badge-warn{background:#ede9fe;color:#5b21b6;}
-.badge-success{background:#dcfce7;color:#166534;}
-.badge-info{background:#dbeafe;color:#1e40af;}
-.progress-labels{display:flex;justify-content:space-between;font-size:10px;color:#ccc;margin-bottom:2px;}
-.progress-track{height:4px;background:#f0f0ee;border-radius:2px;overflow:hidden;}
-.progress-fill{height:100%;border-radius:2px;transition:width .5s;}
-.card-actions{display:flex;gap:6px;margin-top:10px;}
-button{background:#fff;border:1px solid #d5d5d3;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;color:#1a1a1a;transition:background .1s;}
-button:hover{background:#f5f5f3;}
-button:active{transform:scale(.98);}
-.btn-primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
-.btn-primary:hover{background:#333;}
-.btn-sm{padding:5px 10px;font-size:11px;}
-.section-card{background:#fff;border:1px solid #e5e5e3;border-radius:12px;padding:1.25rem;margin-bottom:1rem;}
-input,select{width:100%;border:1px solid #e5e5e3;border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none;transition:border .15s;}
-input:focus,select:focus{border-color:#1a1a1a;}
-label{font-size:12px;color:#888;display:block;margin-bottom:4px;}
-ol{padding-left:1.2rem;}
-ol li{font-size:13px;line-height:1.7;margin-bottom:8px;}
-.nard-card{background:#fff;border:1px solid #e5e5e3;border-radius:12px;padding:1.25rem;margin-bottom:1rem;}
-.nard-note{background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:1.25rem;margin-bottom:1rem;}
-.nard-note p{color:#166534;font-size:13px;line-height:1.7;}
-.spinner{display:inline-block;animation:spin 1s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.sync-info{font-size:11px;color:#aaa;}
-.search-bar{width:100%;max-width:320px;margin-bottom:1rem;}
-.filter-row{display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap;}
-.empty{text-align:center;padding:3rem;color:#aaa;font-size:14px;}
-.divider{height:1px;background:#f0f0ee;margin:1.5rem 0;}
-@media(max-width:600px){.container{padding:1rem;}.topbar{padding:0 1rem;}}
+  :root{
+    --canvas:#f5f2ec; --sidebar:#0c0c0c; --grad-a:#0c7a5e; --grad-b:#0a5a52;
+    --card:#fff; --ink:#1a1a1a; --ink-soft:#5c5c57; --hair:#e7e2d8;
+    --accent:#e0922f; --accent-deep:#c2761b; --link:#b76a12;
+    --mint:#0c7a5e; --mint-soft:#def4e6; --mint-ink:#0f7a45;
+    --hot:#e8531d; --hot-soft:#ffe4d8;
+    --sub:#8a847a; --radius:20px;
+    --ig:linear-gradient(135deg,#f9ce34,#ee2a7b 45%,#6228d7);
+    --tt:#111; --fb:#1877f2; --spotify:#1db954;
+    --shadow:0 1px 0 rgba(0,0,0,.02),0 12px 32px -20px rgba(0,0,0,.30);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--canvas);color:var(--ink);
+    display:flex;min-height:100vh;-webkit-font-smoothing:antialiased;font-size:14px;}
+  a{color:var(--link);text-decoration:none;} a:hover{text-decoration:underline;}
+  .mono{font-family:'DM Mono',monospace;}
+  .disp{font-family:'Bricolage Grotesque',sans-serif;}
+
+  /* ============ SIDEBAR ============ */
+  .sidebar{width:236px;flex-shrink:0;background:var(--sidebar);color:#cfcfca;
+    display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:20;}
+  .profile{padding:24px 20px 18px;background:linear-gradient(160deg,var(--grad-a),var(--grad-b) 58%,#0c0c0c 100%);}
+  .avatar{width:74px;height:74px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.9);display:block;}
+  .pname{font-family:'Bricolage Grotesque';font-weight:800;font-size:19px;color:#fff;margin-top:12px;}
+  .purl{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:#eafff7;
+    background:rgba(0,0,0,.26);padding:3px 9px;border-radius:6px;margin-top:7px;cursor:pointer;}
+  .purl svg{width:10px;height:10px;}
+  .pstatus{font-size:12px;color:#dfece8;margin-top:9px;display:flex;align-items:center;gap:6px;}
+  .pstatus .dot{width:7px;height:7px;border-radius:50%;background:#9fe0cc;box-shadow:0 0 0 3px rgba(159,224,204,.3);}
+  nav{padding:16px 12px;display:flex;flex-direction:column;gap:2px;}
+  nav a{color:#bdbdb7;font-size:14px;padding:9px 13px;border-radius:10px;display:flex;align-items:center;gap:9px;cursor:pointer;}
+  nav a:hover{background:#1b1b1b;color:#fff;text-decoration:none;}
+  nav a.active{background:var(--accent);color:#1a1208;font-weight:600;}
+  nav .tag{margin-left:auto;background:#0c7a5e;color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;}
+  nav a.active .tag{background:#1a1208;color:var(--accent);}
+  nav .sep{height:1px;background:#222;margin:11px 8px;}
+  .foot{margin-top:auto;padding:14px 20px;font-size:11px;color:#6f6f6a;display:flex;flex-direction:column;gap:7px;}
+  .foot a{color:#8d8d87;}
+
+  /* ============ MAIN ============ */
+  main{flex:1;min-width:0;padding:26px 36px 80px;max-width:1220px;}
+  h1.page{font-family:'Bricolage Grotesque';font-weight:800;font-size:30px;letter-spacing:-.5px;display:flex;align-items:center;gap:12px;}
+  .whatsthis{font-family:'Inter';font-size:11.5px;font-weight:600;color:var(--mint-ink);background:var(--mint-soft);
+    border:none;padding:4px 11px;border-radius:30px;cursor:pointer;}
+  .page-sub{color:var(--ink-soft);font-size:13.5px;margin:5px 0 16px;max-width:640px;}
+  .whats{display:none;background:#fff;border:1px solid var(--hair);border-left:3px solid var(--mint);
+    border-radius:12px;padding:14px 16px;font-size:12.5px;color:var(--ink-soft);line-height:1.65;margin-bottom:18px;max-width:760px;}
+  .whats.show{display:block;} .whats b{color:var(--ink);}
+  .view{display:none;} .view.show{display:block;animation:fade .35s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+    border:1px solid var(--hair);overflow:hidden;}
+  .btn{font-family:'Inter';font-weight:600;font-size:13px;border:none;border-radius:10px;padding:9px 15px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px;transition:.15s;}
+  .btn-dark{background:#1a1a1a;color:#fff;} .btn-dark:hover{background:#000;}
+  .btn-mint{background:var(--mint);color:#fff;} .btn-mint:hover{background:#0a6650;}
+  .btn-amber{background:var(--accent);color:#1a1208;} .btn-amber:hover{background:var(--accent-deep);color:#fff;}
+  .btn-ghost{background:#fff;border:1px solid var(--hair);color:#54504a;} .btn-ghost:hover{border-color:#c9c0ae;}
+  .btn-sm{padding:6px 11px;font-size:12px;}
+
+  .section-label{font-family:'Bricolage Grotesque';font-weight:700;font-size:15px;margin:26px 0 12px;
+    display:flex;align-items:center;gap:9px;}
+  .section-label .hint{font-family:'Inter';font-weight:500;font-size:11.5px;color:var(--sub);}
+
+  /* ---- DASHBOARD HOME (Performance + Orders) ---- */
+  .pf-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-bottom:14px;}
+  .dash-h{font-family:'Bricolage Grotesque';font-weight:800;font-size:26px;letter-spacing:-.5px;display:flex;align-items:center;gap:10px;}
+  .pf-toggle{display:inline-flex;background:#efe9dd;border-radius:30px;padding:3px;gap:3px;justify-self:center;}
+  .pf-toggle button{font-family:'Inter';font-weight:600;font-size:13px;border:none;background:transparent;color:var(--ink-soft);padding:8px 18px;border-radius:30px;cursor:pointer;}
+  .pf-toggle button.on{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.1);}
+  .kpi{background:#fff;border:1px solid var(--hair);border-radius:var(--radius);box-shadow:var(--shadow);display:flex;position:relative;overflow:hidden;}
+  .kpi-cell{flex:1;padding:20px 22px;border-right:1px solid var(--hair);min-width:0;}
+  .kpi-cell:last-child{border-right:none;}
+  .kpi-n{font-family:'Bricolage Grotesque';font-weight:800;font-size:29px;display:flex;align-items:center;gap:8px;line-height:1;}
+  .kpi-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .dot-g{background:#2bb673;} .dot-y{background:#f0b429;} .dot-m{background:var(--mint);}
+  .kpi-l{font-size:12px;color:var(--ink-soft);margin-top:8px;display:flex;align-items:center;gap:6px;}
+  .kpi-q{width:15px;height:15px;border-radius:50%;background:#efe9dd;color:#8a847a;font-size:9.5px;display:inline-flex;align-items:center;justify-content:center;cursor:help;flex-shrink:0;}
+  .kpi-kebab{position:absolute;top:16px;right:14px;color:#a39c90;cursor:pointer;letter-spacing:2px;font-weight:700;}
+  .feedbar{display:flex;align-items:center;gap:14px;background:linear-gradient(110deg,#11271f,#0c0c0c 80%);color:#eafdf5;border-radius:var(--radius);padding:15px 20px;margin:16px 0;position:relative;overflow:hidden;}
+  .feedbar::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 140% at 100% 0,rgba(224,146,47,.18),transparent 55%);pointer-events:none;}
+  .feedbar .em{font-size:22px;position:relative;z-index:1;}
+  .feedbar .fb-t{font-weight:700;font-size:14px;color:#fff;position:relative;z-index:1;}
+  .feedbar .fb-s{font-size:12px;color:#9bbcae;position:relative;z-index:1;}
+  .feedbar .btn{margin-left:auto;flex-shrink:0;position:relative;z-index:1;}
+  .ord-tabs{display:flex;background:#faf8f3;border:1px solid var(--hair);border-radius:14px 14px 0 0;overflow:hidden;}
+  .ord-tab{flex:1;text-align:center;padding:15px 10px;font-weight:600;font-size:13.5px;color:var(--sub);cursor:pointer;border-right:1px solid var(--hair);display:flex;align-items:center;justify-content:center;gap:8px;}
+  .ord-tab:last-child{border-right:none;} .ord-tab.on{background:#fff;color:var(--ink);}
+  .ord-tab .cnt{background:#efe9dd;color:#54504a;font-size:11px;font-weight:700;border-radius:8px;padding:1px 8px;font-family:'DM Mono';}
+  .ord-tab.on .cnt{background:var(--mint-soft);color:var(--mint-ink);}
+  .ord-wrap{background:#fff;border:1px solid var(--hair);border-top:none;border-radius:0 0 14px 14px;box-shadow:var(--shadow);overflow-x:auto;}
+  table.ord{width:100%;border-collapse:collapse;min-width:840px;}
+  .ord th{text-align:left;font-size:12px;font-weight:700;color:#54504a;padding:13px 18px;border-bottom:1px solid var(--hair);white-space:nowrap;}
+  .ord th.r{text-align:right;}
+  .ord td{padding:15px 18px;border-bottom:1px solid var(--hair);font-size:13.5px;white-space:nowrap;}
+  .ord tr:last-child td{border-bottom:none;}
+  .ord tbody tr:hover td{background:#fdf9f0;}
+  .ord .onum{font-family:'DM Mono';color:#54504a;} .ord .odate{font-family:'DM Mono';color:#54504a;font-size:13px;}
+  .ord .earn{font-family:'DM Mono';text-align:right;font-weight:500;}
+  .otype{font-size:10px;font-weight:800;letter-spacing:.5px;padding:4px 9px;border-radius:6px;color:#fff;}
+  .otype.song{background:#3fae7a;} .otype.rev{background:#e2536b;}
+  .otitle{font-weight:600;border-bottom:1px solid var(--hair);} .otitle:hover{color:var(--accent-deep);}
+  .ord-link{color:var(--link);text-decoration:underline;cursor:pointer;}
+  .ord-total{text-align:right;font-size:16px;font-weight:700;margin-top:16px;font-family:'Bricolage Grotesque';}
+  .ord-total b{font-family:'DM Mono';}
+  .disc-list .disc-row{display:flex;align-items:center;gap:12px;padding:14px 18px;border-top:1px solid var(--hair);}
+  .disc-list .disc-row:first-child{border-top:none;}
+  .disc-av{width:38px;height:38px;border-radius:50%;background-size:cover;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;}
+  .disc-t{font-weight:600;font-size:13.5px;} .disc-s{font-size:12px;color:var(--sub);}
+  .disc-when{margin-left:auto;font-size:11px;color:var(--sub);font-family:'DM Mono';}
+  @media(max-width:760px){.pf-head{grid-template-columns:1fr;gap:12px;}.pf-toggle{justify-self:start;}.kpi{flex-wrap:wrap;}.kpi-cell{flex:1 1 45%;border-bottom:1px solid var(--hair);}}
+
+  /* ---- MOMENTUM STRIP (new) ---- */
+  .momentum{background:linear-gradient(110deg,#11271f,#0c0c0c 80%);color:#eafdf5;border-radius:var(--radius);
+    padding:18px 22px;display:flex;align-items:center;gap:22px;flex-wrap:wrap;position:relative;overflow:hidden;margin-bottom:6px;}
+  .momentum::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 140% at 100% 0,rgba(224,146,47,.22),transparent 55%);pointer-events:none;}
+  .mom-left{position:relative;z-index:1;}
+  .mom-k{font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:#7fccae;font-weight:700;}
+  .mom-h{font-family:'Bricolage Grotesque';font-weight:800;font-size:22px;color:#fff;margin-top:2px;}
+  .mom-steps{display:flex;gap:10px;flex-wrap:wrap;position:relative;z-index:1;}
+  .mstep{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;
+    padding:9px 13px;display:flex;align-items:center;gap:9px;font-size:12.5px;min-width:0;}
+  .mstep .ic{width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+  .mstep.done .ic{background:var(--mint);color:#fff;} .mstep.done{color:#cdeede;}
+  .mstep.todo .ic{background:rgba(224,146,47,.22);color:var(--accent);}
+  .mstep.todo{color:#f3ddc0;cursor:pointer;} .mstep.todo:hover{background:rgba(255,255,255,.12);}
+  .mstep b{font-weight:700;}
+  .mom-flame{margin-left:auto;text-align:center;position:relative;z-index:1;}
+  .mom-flame .n{font-family:'DM Mono';font-weight:500;font-size:30px;color:var(--accent);line-height:1;}
+  .mom-flame .l{font-size:10.5px;color:#9bbcae;text-transform:uppercase;letter-spacing:.5px;margin-top:3px;}
+
+  /* ---- HUB ---- */
+  .hub{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;margin-top:14px;}
+  .globe-card{background:linear-gradient(165deg,#0d231b,#0c0c0c);border-radius:var(--radius);padding:22px;color:#eafdf5;position:relative;overflow:hidden;}
+  .globe-card h2{font-family:'Bricolage Grotesque';font-weight:800;font-size:21px;color:#fff;}
+  .globe-card p{font-size:12.5px;color:#9bbcae;margin-top:4px;}
+  .globe-wrap{height:180px;position:relative;margin:14px 0 10px;}
+  .globe{position:absolute;inset:0;border-radius:50%;width:180px;height:180px;left:50%;transform:translateX(-50%);
+    background:radial-gradient(circle at 35% 30%,#15543f,#0a2a20 70%,#06150f);box-shadow:inset -14px -14px 40px rgba(0,0,0,.6),0 0 50px rgba(12,122,94,.25);overflow:hidden;}
+  .globe .map{position:absolute;inset:0;background-image:radial-gradient(rgba(159,224,204,.35) 1px,transparent 1.4px);background-size:11px 11px;opacity:.5;animation:spin 40s linear infinite;}
+  @keyframes spin{to{background-position:120px 0;}}
+  .city{position:absolute;}
+  .cdot{width:7px;height:7px;border-radius:50%;background:var(--accent);display:block;box-shadow:0 0 0 4px rgba(224,146,47,.25);animation:pulse 2.4s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(224,146,47,.25);}50%{box-shadow:0 0 0 8px rgba(224,146,47,0);}}
+  .globe-stat{font-family:'DM Mono';font-size:12px;color:#cdeede;text-align:center;margin-top:6px;}
+  .globe-stat b{color:#fff;}
+  .hub-side{display:flex;flex-direction:column;gap:12px;}
+  .live-card{padding:16px 18px;}
+  .live-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--hot);text-transform:uppercase;letter-spacing:.5px;}
+  .live-dot{width:7px;height:7px;border-radius:50%;background:var(--hot);animation:pulse2 1.4s infinite;}
+  @keyframes pulse2{0%,100%{opacity:1;}50%{opacity:.3;}}
+  .live-card h3{font-family:'Bricolage Grotesque';font-weight:700;font-size:15px;margin:7px 0 3px;}
+  .live-card p{font-size:12px;color:var(--ink-soft);margin-bottom:10px;}
+  .hubrow{display:flex;align-items:center;gap:11px;padding:13px 15px;}
+  .feat-av{width:40px;height:40px;border-radius:50%;background-size:cover;background-position:center;flex-shrink:0;}
+  .hr-ic{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;position:relative;}
+  .hr-ic .badge{position:absolute;top:-4px;right:-4px;background:var(--hot);color:#fff;font-size:10px;font-weight:700;border-radius:20px;min-width:16px;height:16px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
+  .hr-t{font-weight:700;font-size:13px;} .hr-s{font-size:11.5px;color:var(--sub);}
+
+  /* ---- BOOST LEDGER (new) ---- */
+  .ledger{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:14px;}
+  .ledger .half{padding:18px 20px;}
+  .ledger .half:first-child{border-right:1px solid var(--hair);}
+  .led-k{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--sub);font-weight:700;}
+  .led-n{font-family:'DM Mono';font-weight:500;font-size:34px;line-height:1;margin:6px 0 4px;}
+  .led-give{color:var(--accent-deep);} .led-get{color:var(--mint-ink);}
+  .led-s{font-size:12px;color:var(--ink-soft);}
+  .led-bar{height:7px;border-radius:6px;background:#efe9dd;overflow:hidden;margin-top:11px;}
+  .led-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--mint));transition:width .8s cubic-bezier(.2,.8,.2,1);}
+  .led-note{grid-column:1/-1;border-top:1px solid var(--hair);padding:11px 20px;font-size:12px;color:var(--ink-soft);background:#faf6ee;}
+  .led-note b{color:var(--accent-deep);}
+
+  /* ---- LEADERBOARD ---- */
+  .lead-row{display:flex;align-items:center;gap:13px;padding:11px 18px;border-top:1px solid var(--hair);}
+  .lead-row:first-child{border-top:none;} .lead-row.you{background:#faf6ee;}
+  .lead-rank{font-family:'DM Mono';font-weight:500;width:22px;text-align:center;color:var(--sub);}
+  .lead-row.top .lead-rank{color:var(--accent);font-weight:700;}
+  .lead-av{width:36px;height:36px;border-radius:50%;background-size:cover;background-position:center;flex-shrink:0;}
+  .lead-name{font-weight:700;font-size:13.5px;} .lead-sub{font-size:11.5px;color:var(--sub);}
+  .lead-badge{font-size:10px;font-weight:700;background:var(--mint-soft);color:var(--mint-ink);padding:3px 9px;border-radius:20px;}
+  .lead-score{font-family:'DM Mono';font-weight:500;font-size:16px;color:var(--ink);width:42px;text-align:right;}
+  .perks{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px;}
+  .perk{font-size:11.5px;background:#fff;border:1px solid var(--hair);border-radius:30px;padding:6px 13px;}
+  .perk b{color:var(--accent-deep);}
+  .perk-note{font-size:11.5px;color:var(--sub);margin-top:9px;max-width:720px;line-height:1.5;}
+
+  /* ---- SEGMENT ---- */
+  .seg{display:inline-flex;background:#efe9dd;border-radius:12px;padding:3px;gap:3px;margin:24px 0 14px;}
+  .seg button{font-family:'Inter';font-weight:600;font-size:13px;border:none;background:transparent;color:var(--ink-soft);
+    padding:8px 16px;border-radius:9px;cursor:pointer;}
+  .seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.08);}
+
+  /* ---- FEED ---- */
+  .share-cta{display:flex;align-items:center;gap:16px;background:linear-gradient(120deg,#fff,#fdf3e1);
+    border:1px solid var(--hair);border-radius:var(--radius);padding:16px 20px;margin-bottom:16px;}
+  .share-cta .em{font-size:26px;}
+  .share-cta h3{font-family:'Bricolage Grotesque';font-weight:700;font-size:15px;}
+  .share-cta p{font-size:12px;color:var(--ink-soft);max-width:420px;}
+  .share-cta .btn{margin-left:auto;flex-shrink:0;}
+
+  .sortbar{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+  .sort{font-family:'Inter';font-size:12.5px;font-weight:600;border:1px solid var(--hair);background:#fff;color:var(--ink-soft);
+    padding:7px 13px;border-radius:30px;cursor:pointer;}
+  .sort.on{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
+  .view-switch{margin-left:auto;display:inline-flex;border:1px solid var(--hair);border-radius:9px;overflow:hidden;}
+  .vs{font-family:'Inter';font-size:12px;font-weight:600;border:none;background:#fff;color:var(--ink-soft);padding:7px 11px;cursor:pointer;display:flex;align-items:center;gap:5px;}
+  .vs svg{width:13px;height:13px;fill:currentColor;} .vs.on{background:#efe9dd;color:var(--ink);}
+  .filters{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:16px;}
+  .f{font-family:'Inter';font-size:11.5px;font-weight:600;border:1px solid var(--hair);background:#fff;color:var(--ink-soft);padding:5px 11px;border-radius:30px;cursor:pointer;}
+  .f.on{background:var(--mint-soft);color:var(--mint-ink);border-color:#bfe6cf;}
+  .flabel{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--sub);font-weight:700;margin-left:4px;}
+  .fdiv{width:1px;height:18px;background:var(--hair);margin:0 3px;}
+
+  .feed-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .feed-grid.list{grid-template-columns:1fr;}
+  .post{display:flex;flex-direction:column;}
+  .post-media{position:relative;aspect-ratio:16/10;background-size:cover;background-position:center;}
+  .post-media .play{position:absolute;inset:0;margin:auto;width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,.55);
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;backdrop-filter:blur(2px);}
+  .post-badges{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:6px;}
+  .plat{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;}
+  .plat svg{width:15px;height:15px;fill:#fff;} .plat.ig{background:var(--ig);} .plat.tt{background:var(--tt);}
+  .plat.fb{background:var(--fb);} .plat.sf{background:#0d231b;color:#a9ecc4;font-size:15px;}
+  .chip{font-size:9.5px;font-weight:700;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px;}
+  .chip-hot{background:var(--hot);color:#fff;}
+  .c-rel{background:var(--mint-soft);color:var(--mint-ink);} .c-show{background:#deedfb;color:#2a6cb0;}
+  .c-mile{background:#f7e9c6;color:#8a6312;} .c-feat{background:#ffe4d8;color:#c14e2a;}
+  .c-live{background:var(--hot-soft);color:var(--hot);} .c-studio{background:#e7e2f7;color:#5b46b0;}
+  .c-pov{background:#d9f0de;color:#0a7a22;} .c-bts{background:#efe9dd;color:#54504a;}
+  .post-body{padding:14px 16px 15px;display:flex;flex-direction:column;gap:9px;flex:1;}
+  .post-who{display:flex;align-items:center;gap:9px;}
+  .mini-av{width:32px;height:32px;border-radius:50%;background-size:cover;background-position:center;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;}
+  .who-name{font-weight:700;font-size:13px;display:flex;align-items:center;gap:6px;}
+  .who-meta{font-size:11px;color:var(--sub);font-family:'DM Mono';}
+  .post-cap{font-size:13px;line-height:1.55;color:#2a2925;}
+  .shared-link{display:flex;align-items:center;gap:11px;background:#faf6ee;border:1px solid var(--hair);border-radius:11px;padding:10px 12px;}
+  .shared-link:hover{text-decoration:none;border-color:#c9c0ae;}
+  .sl-ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0;}
+  .sl-t{font-size:12.5px;font-weight:700;color:var(--ink);} .sl-s{font-size:11px;color:var(--sub);}
+  .sl-go{margin-left:auto;color:var(--sub);}
+  .post-stats{font-size:11.5px;color:var(--sub);font-family:'DM Mono';display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .lift{display:inline-flex;align-items:center;gap:5px;background:var(--mint-soft);color:var(--mint-ink);font-weight:600;
+    padding:3px 9px;border-radius:20px;font-family:'Inter';font-size:11px;}
+  .lift .dot{width:6px;height:6px;border-radius:50%;background:var(--mint-ink);}
+  .post-actions{display:flex;gap:8px;margin-top:auto;}
+  .post-actions .btn{flex:0 0 auto;}
+  .act-boost{background:var(--accent);color:#1a1208;font-weight:700;flex:1;justify-content:center;}
+  .act-boost:hover{background:var(--accent-deep);color:#fff;}
+  .act-boost.boosted{background:var(--mint);color:#fff;}
+  .iconbtn{background:#fff;border:1px solid var(--hair);color:#54504a;border-radius:10px;padding:9px 12px;cursor:pointer;font-size:14px;}
+  .iconbtn:hover{border-color:#c9c0ae;}
+  .composer{display:none;gap:7px;margin-top:2px;}
+  .composer.open{display:flex;}
+  .composer input{flex:1;border:1px solid var(--hair);border-radius:9px;padding:8px 11px;font-family:inherit;font-size:12.5px;}
+  .comment-line{font-size:12px;background:#faf6ee;border-radius:9px;padding:8px 11px;margin-top:2px;}
+  .comment-line .cl-meta{font-size:10.5px;color:var(--mint-ink);font-family:'DM Mono';}
+  .cta-card{grid-column:1/-1;background:linear-gradient(120deg,#11271f,#0c0c0c);color:#eafdf5;border-radius:var(--radius);
+    padding:26px;text-align:center;}
+  .cta-card .em{font-size:30px;} .cta-card .big{font-family:'Bricolage Grotesque';font-weight:800;font-size:18px;margin:8px 0 4px;color:#fff;}
+  .cta-card p{font-size:12.5px;color:#9bbcae;margin-bottom:14px;}
+
+  /* ---- compact list rows ---- */
+  .feed-grid.list .post{flex-direction:row;align-items:stretch;}
+  .feed-grid.list .post-media{width:130px;aspect-ratio:auto;flex-shrink:0;}
+  .feed-grid.list .post-badges{display:none;}
+  .feed-grid.list .post-body{padding:12px 14px;}
+
+  /* ---- IMMERSIVE REEL (the feed, baked in) ---- */
+  .reel{position:relative;background:#0a0a0c;border-radius:var(--radius);overflow:hidden;height:80vh;min-height:580px;
+    box-shadow:0 30px 70px -40px rgba(0,0,0,.6);user-select:none;}
+  .reel.full{position:fixed;inset:0;z-index:150;height:100vh;min-height:100vh;border-radius:0;}
+  .reel-head{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:center;justify-content:space-between;
+    padding:14px 18px;background:linear-gradient(180deg,rgba(0,0,0,.6),transparent);color:#fff;}
+  .reel-head .rh-t{font-family:'Bricolage Grotesque';font-weight:700;font-size:15px;}
+  .reel-head .rh-s{font-size:11.5px;color:#a9b4ae;margin-top:1px;}
+  .reel-head-r{display:flex;align-items:center;gap:10px;}
+  .reel-count{font-family:'DM Mono';font-size:12px;color:#cdd6d1;}
+  .reel-iconbtn{width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);
+    color:#fff;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;}
+  .reel-iconbtn:hover{background:rgba(255,255,255,.16);}
+  .reel-stage{position:absolute;inset:0;overflow:hidden;touch-action:none;}
+  .reel-track{height:100%;transition:transform .5s cubic-bezier(.2,.8,.2,1);}
+  .reel-slide{height:100%;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .reel-bg{position:absolute;inset:-40px;background-size:cover;background-position:center;filter:blur(40px) brightness(.4);transform:scale(1.2);}
+  .reel-port{position:relative;height:100%;aspect-ratio:9/16;max-width:100%;background-size:cover;background-position:center;
+    box-shadow:0 0 0 1px rgba(255,255,255,.06);}
+  .reel-port::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35) 0%,transparent 22%,transparent 50%,rgba(0,0,0,.85) 100%);}
+  .reel-top{position:absolute;top:14px;left:14px;right:14px;z-index:3;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+  .cobrand{display:inline-flex;align-items:center;gap:6px;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.18);
+    color:#fff;font-size:11px;font-weight:700;padding:5px 11px;border-radius:30px;letter-spacing:.3px;}
+  .cobrand .cb-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .reel-play{position:absolute;inset:0;margin:auto;width:58px;height:58px;border-radius:50%;background:rgba(0,0,0,.45);
+    backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;z-index:2;cursor:pointer;}
+  .reel-bottom{position:absolute;left:16px;right:74px;bottom:18px;z-index:3;color:#fff;}
+  .reel-name{font-family:'Bricolage Grotesque';font-weight:800;font-size:20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .reel-name .chip{font-size:9px;}
+  .reel-cred{font-family:'DM Mono';font-size:12px;color:#cdd6d1;margin-top:3px;}
+  .reel-cap{font-size:13.5px;line-height:1.5;margin-top:9px;color:#f2f2ee;max-width:460px;
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+  .reel-cta{margin-top:13px;display:inline-flex;align-items:center;gap:7px;background:var(--sf-blue,#0056fc);background:#1a1a1a;
+    border:1px solid rgba(255,255,255,.25);color:#fff;font-weight:600;font-size:13px;padding:9px 16px;border-radius:30px;cursor:pointer;}
+  .reel-cta:hover{background:#000;}
+  .reel-rail{position:absolute;right:14px;bottom:18px;z-index:4;display:flex;flex-direction:column;gap:14px;align-items:center;}
+  .rail-btn{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:#fff;}
+  .rail-btn .ic{width:46px;height:46px;border-radius:50%;background:rgba(0,0,0,.42);backdrop-filter:blur(4px);
+    border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:19px;transition:.15s;}
+  .rail-btn:hover .ic{background:rgba(0,0,0,.62);}
+  .rail-btn .ct{font-size:11px;font-family:'DM Mono';color:#e7e7e3;}
+  .rail-btn.rail-boost.on .ic{background:var(--accent);border-color:var(--accent);color:#1a1208;}
+  .reel-dots{position:absolute;right:8px;top:50%;transform:translateY(-50%);z-index:5;display:flex;flex-direction:column;gap:6px;}
+  .reel-dots i{width:4px;height:4px;border-radius:3px;background:rgba(255,255,255,.3);transition:.25s;display:block;}
+  .reel-dots i.on{background:#fff;height:18px;}
+  .reel-nav{position:absolute;z-index:5;right:18px;display:flex;flex-direction:column;gap:8px;top:50%;transform:translateY(-50%);}
+  .reel-chev{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.4);
+    color:#fff;cursor:pointer;font-size:16px;display:none;align-items:center;justify-content:center;}
+  .reel-hint{position:absolute;left:50%;transform:translateX(-50%);z-index:4;color:rgba(255,255,255,.5);font-size:11px;
+    display:flex;flex-direction:column;align-items:center;gap:2px;pointer-events:none;}
+  .reel-hint.up{top:54px;} .reel-hint.down{bottom:10px;}
+  @keyframes bob{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(4px);}}
+  .reel-hint.down{animation:bob 1.8s ease-in-out infinite;}
+
+  /* ---- FORUM / BOARD ---- */
+  .board-bar{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--hair);border-radius:var(--radius);padding:14px 18px;margin-bottom:14px;}
+  .board-bar .bb-t{font-weight:800;font-size:14px;} .board-bar .bb-s{font-size:12px;color:var(--sub);}
+  .board-bar .btn{margin-left:auto;}
+  .crumb{font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+  .crumb a{cursor:pointer;} .crumb .s{color:#bdb6a8;}
+  .cat-head{background:#241f1a;color:#f3ead6;padding:11px 20px;font-family:'Bricolage Grotesque';font-weight:700;font-size:14px;
+    display:flex;align-items:center;gap:9px;border-radius:var(--radius) var(--radius) 0 0;}
+  .cat-head .em{color:var(--accent);} .cat-head .official{margin-left:auto;font-family:'Inter';font-size:10px;font-weight:600;color:#a39c90;text-transform:uppercase;letter-spacing:.5px;}
+  .bcard{margin-bottom:16px;}
+  .frow{display:grid;grid-template-columns:1fr 70px 70px 180px;align-items:center;padding:14px 20px;border-top:1px solid var(--hair);cursor:pointer;}
+  .frow:hover{background:#fdf3e1;} .frow .num{text-align:center;font-family:'DM Mono';font-weight:500;color:#54504a;}
+  .frow .num small{display:block;font-family:'Inter';font-weight:500;font-size:9px;color:#a39c90;text-transform:uppercase;}
+  .folder{display:flex;gap:12px;align-items:flex-start;}
+  .ficon{width:30px;height:26px;border-radius:5px;flex-shrink:0;margin-top:2px;position:relative;background:linear-gradient(180deg,#f2c98a,#e0922f);border:1px solid #c2761b;}
+  .ficon.unread{background:linear-gradient(180deg,#9fe0cc,#0c7a5e);border-color:#0a5a52;}
+  .ficon::after{content:"";position:absolute;left:4px;right:4px;top:6px;height:2px;background:rgba(255,255,255,.55);border-radius:2px;box-shadow:0 4px 0 rgba(255,255,255,.45),0 8px 0 rgba(255,255,255,.35);}
+  .fname{font-family:'Bricolage Grotesque';font-weight:700;font-size:15px;color:var(--ink);}
+  .frow:hover .fname{color:var(--accent-deep);}
+  .fdesc{font-size:12px;color:var(--sub);margin-top:3px;max-width:520px;line-height:1.45;}
+  .lastpost{font-size:11.5px;color:var(--ink-soft);} .lastpost b{color:var(--link);} .lastpost .when{color:#a39c90;font-family:'DM Mono';}
+  /* thread list */
+  .trow{display:grid;grid-template-columns:30px 1fr 64px 200px;align-items:center;padding:12px 18px;border-top:1px solid var(--hair);cursor:pointer;}
+  .trow:hover{background:#fdf3e1;} .ticon{width:20px;height:17px;border-radius:4px;background:linear-gradient(180deg,#f2c98a,#e0922f);border:1px solid #c2761b;}
+  .ticon.hot{background:linear-gradient(180deg,#ff9d6b,#e8531d);border-color:#c23d0e;} .ticon.pin{background:linear-gradient(180deg,#9fe0cc,#0c7a5e);border-color:#0a5a52;}
+  .ttitle{font-weight:600;font-size:14px;} .trow:hover .ttitle{color:var(--accent-deep);}
+  .tmeta{font-size:11px;color:var(--sub);} .tnum{text-align:center;font-family:'DM Mono';color:#54504a;}
+  .tlast{font-size:11px;color:var(--ink-soft);} .tlast b{color:var(--link);} .tlast .when{color:#a39c90;font-family:'DM Mono';}
+  .badge-i{display:inline-block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:1px 6px;border-radius:4px;margin-right:6px;}
+  .badge-i.pin{background:#0c7a5e;color:#fff;} .badge-i.ann{background:var(--accent);color:#1a1208;}
+  /* thread view */
+  .post-card{display:grid;grid-template-columns:170px 1fr;border-top:1px solid var(--hair);}
+  .post-card:first-of-type{border-top:none;}
+  .usercard{background:#f7f2e8;padding:16px 14px;border-right:1px solid var(--hair);text-align:center;}
+  .uc-avatar{width:64px;height:64px;border-radius:8px;object-fit:cover;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.12);margin:0 auto 8px;display:block;}
+  .uc-name{font-family:'Bricolage Grotesque';font-weight:700;font-size:14px;}
+  .uc-rank{font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;margin-top:3px;}
+  .uc-stars{color:var(--accent);font-size:11px;letter-spacing:1px;}
+  .uc-stats{margin-top:9px;font-size:10.5px;color:var(--sub);line-height:1.7;border-top:1px dashed #ddd5c6;padding-top:8px;text-align:left;font-family:'DM Mono';}
+  .uc-stats b{color:#54504a;}
+  .postbody{padding:15px 20px;min-width:0;}
+  .post-top{display:flex;justify-content:space-between;font-size:11px;color:#a39c90;border-bottom:1px solid var(--hair);padding-bottom:7px;margin-bottom:11px;font-family:'DM Mono';}
+  .qbtn{color:var(--link);cursor:pointer;font-weight:600;font-family:'Inter';}
+  .ptext{font-size:13.5px;line-height:1.65;white-space:pre-wrap;}
+  .quote{display:block;background:#faf6ee;border-left:3px solid var(--accent);padding:9px 12px;border-radius:6px;margin-bottom:10px;font-size:12.5px;color:#6a6660;}
+  .sig{margin-top:12px;padding-top:9px;border-top:1px dashed #ddd5c6;font-size:11.5px;color:#a39c90;font-style:italic;}
+  .replybox{padding:16px 20px;border-top:1px solid var(--hair);}
+  .replybox h3{font-family:'Bricolage Grotesque';font-weight:700;font-size:14px;margin-bottom:9px;}
+  .replybox textarea,.subj{width:100%;border:1px solid var(--hair);border-radius:9px;padding:10px;font-family:inherit;font-size:13.5px;margin-bottom:9px;}
+  .replybox textarea{min-height:80px;resize:vertical;} .subj{margin-bottom:9px;}
+  .empty{padding:36px;text-align:center;color:var(--sub);} .empty h3{font-family:'Bricolage Grotesque';color:var(--ink);margin-bottom:5px;}
+
+  /* ---- CREATIVE ---- */
+  .creative-intro{background:linear-gradient(120deg,#11271f,#0c0c0c);color:#eafdf5;border-radius:var(--radius);padding:24px 26px;margin-bottom:18px;}
+  .creative-intro h2{font-family:'Bricolage Grotesque';font-weight:800;font-size:22px;color:#fff;}
+  .creative-intro p{font-size:13px;color:#9bbcae;margin-top:6px;max-width:620px;line-height:1.6;}
+  .camp{background:#fff;border:1px solid var(--hair);border-radius:var(--radius);overflow:hidden;margin-bottom:14px;}
+  .camp-head{display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;}
+  .camp-emoji{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;background:#faf6ee;flex-shrink:0;}
+  .camp-t{font-family:'Bricolage Grotesque';font-weight:700;font-size:16px;}
+  .camp-s{font-size:12px;color:var(--ink-soft);margin-top:2px;max-width:520px;}
+  .camp-meta{margin-left:auto;text-align:right;flex-shrink:0;}
+  .camp-meta .mn{font-family:'DM Mono';font-size:13px;color:var(--accent-deep);font-weight:500;}
+  .camp-meta .ml{font-size:10.5px;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;}
+  .camp-body{display:none;border-top:1px solid var(--hair);padding:18px 20px;}
+  .camp.open .camp-body{display:block;}
+  .camp-brief{font-size:13px;color:var(--ink-soft);line-height:1.6;margin-bottom:16px;}
+  .cg{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .brief-sub{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--sub);font-weight:700;margin-bottom:10px;}
+  .prompt{border:1px solid var(--hair);border-radius:12px;padding:13px 15px;margin-bottom:11px;}
+  .prompt h4{font-family:'Bricolage Grotesque';font-weight:700;font-size:13.5px;margin-bottom:9px;}
+  .shot{display:flex;gap:9px;align-items:flex-start;font-size:12px;color:#3a3935;margin-bottom:6px;}
+  .shot .n{width:18px;height:18px;border-radius:50%;background:#faf6ee;color:var(--accent-deep);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'DM Mono';}
+  .prompt-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:10.5px;color:var(--sub);margin:9px 0;font-family:'DM Mono';}
+  .prompt-actions{display:flex;gap:7px;}
+  .hook{display:flex;align-items:center;gap:11px;border:1px solid var(--hair);border-radius:11px;padding:10px 12px;margin-bottom:9px;}
+  .hook-score{display:flex;gap:2px;flex-shrink:0;}
+  .hook-score i{width:6px;height:6px;border-radius:50%;background:#e7e2d8;display:block;}
+  .hook-score i.fill{background:var(--accent);}
+  .hook-pat{font-size:12.5px;font-weight:600;} .hook-ex{font-size:11.5px;color:var(--sub);font-style:italic;margin-top:2px;}
+  .guide-list{list-style:none;font-size:12.5px;}
+  .guide-list li{padding:6px 0 6px 24px;position:relative;color:#3a3935;line-height:1.5;}
+  .guide-list li.do::before{content:"✓";position:absolute;left:0;color:var(--mint-ink);font-weight:700;}
+  .guide-list li.dont::before{content:"✗";position:absolute;left:0;color:var(--hot);font-weight:700;}
+
+  /* ---- WIN CARD GENERATOR (new signature) ---- */
+  .wincard-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
+  .wc-controls .field{margin-bottom:14px;}
+  .wc-controls label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--sub);font-weight:700;margin-bottom:6px;}
+  .wc-controls input,.wc-controls select,.wc-controls textarea{width:100%;border:1px solid var(--hair);border-radius:10px;padding:10px 12px;font-family:inherit;font-size:13.5px;}
+  .wc-controls textarea{min-height:60px;resize:vertical;}
+  .wc-types{display:flex;gap:8px;flex-wrap:wrap;}
+  .wc-type{font-size:12px;font-weight:600;border:1px solid var(--hair);background:#fff;color:var(--ink-soft);padding:7px 13px;border-radius:30px;cursor:pointer;}
+  .wc-type.on{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
+  .wc-preview{position:sticky;top:20px;}
+  #winCard{width:100%;aspect-ratio:4/5;border-radius:18px;overflow:hidden;position:relative;color:#fff;
+    padding:30px 28px;display:flex;flex-direction:column;box-shadow:0 20px 50px -24px rgba(0,0,0,.5);}
+  #winCard .wc-eyebrow{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;opacity:.85;}
+  #winCard .wc-headline{font-family:'Bricolage Grotesque';font-weight:800;font-size:34px;line-height:1.08;margin-top:14px;}
+  #winCard .wc-meta{font-family:'DM Mono';font-size:13px;opacity:.85;margin-top:12px;}
+  #winCard .wc-spacer{flex:1;}
+  #winCard .wc-amp{display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.28);border-radius:14px;padding:12px 14px;backdrop-filter:blur(4px);}
+  #winCard .wc-amp .ava{display:flex;}
+  #winCard .wc-amp .ava span{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.9);background-size:cover;margin-left:-8px;}
+  #winCard .wc-amp .ava span:first-child{margin-left:0;}
+  #winCard .wc-amp-t{font-size:12px;font-weight:600;line-height:1.3;}
+  #winCard .wc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:14px;font-size:12px;}
+  #winCard .wc-foot .brand{display:flex;align-items:center;gap:7px;font-weight:700;}
+  #winCard .wc-foot .brand .b-ic{width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;}
+  #winCard .wc-handle{font-family:'DM Mono';opacity:.85;}
+  .wc-actions{display:flex;gap:9px;margin-top:14px;}
+
+  /* ---- OVERLAY / TOAST ---- */
+  .overlay{position:fixed;inset:0;background:rgba(20,18,15,.55);backdrop-filter:blur(3px);z-index:100;display:none;align-items:center;justify-content:center;padding:20px;}
+  .overlay.show{display:flex;animation:fade .2s;}
+  .modal{background:#fff;border-radius:var(--radius);max-width:480px;width:100%;padding:24px;max-height:90vh;overflow:auto;}
+  .modal h3{font-family:'Bricolage Grotesque';font-weight:800;font-size:19px;margin-bottom:4px;}
+  .modal p.sub{font-size:12.5px;color:var(--ink-soft);margin-bottom:16px;}
+  .modal label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--sub);font-weight:700;margin:13px 0 6px;}
+  .modal input,.modal select,.modal textarea{width:100%;border:1px solid var(--hair);border-radius:10px;padding:10px 12px;font-family:inherit;font-size:13.5px;}
+  .modal textarea{min-height:80px;resize:vertical;}
+  .modal .row{display:flex;gap:10px;margin-top:18px;}
+  .success{text-align:center;padding:14px 0;}
+  .success .ring{width:60px;height:60px;border-radius:50%;background:var(--mint-soft);border:2px solid var(--mint);display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--mint-ink);margin:0 auto 14px;}
+
+  .drawer{position:fixed;top:0;right:0;bottom:0;width:380px;max-width:92vw;background:#fff;box-shadow:-10px 0 40px rgba(0,0,0,.18);z-index:110;transform:translateX(100%);transition:.28s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;}
+  .drawer.show{transform:none;}
+  .drawer-head{padding:16px 18px;border-bottom:1px solid var(--hair);display:flex;align-items:center;justify-content:space-between;}
+  .drawer-head h3{font-family:'Bricolage Grotesque';font-weight:800;font-size:16px;}
+  .x{cursor:pointer;color:var(--sub);font-size:20px;border:none;background:none;}
+  .msg-list{overflow:auto;flex:1;}
+  .msg-item{display:flex;gap:11px;padding:13px 18px;border-bottom:1px solid var(--hair);cursor:pointer;align-items:center;}
+  .msg-item:hover{background:#faf6ee;}
+  .msg-av{width:40px;height:40px;border-radius:50%;background-size:cover;flex-shrink:0;}
+  .msg-n{font-weight:700;font-size:13px;} .msg-p{font-size:12px;color:var(--ink-soft);}
+  .msg-time{font-size:10.5px;color:var(--sub);margin-left:auto;font-family:'DM Mono';}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a1a;color:#fff;
+    padding:12px 18px;border-radius:12px;font-size:13px;font-weight:500;z-index:200;opacity:0;transition:.25s;box-shadow:0 12px 30px rgba(0,0,0,.3);max-width:90vw;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast b{color:var(--accent);}
+
+  @media(max-width:980px){
+    .hub{grid-template-columns:1fr;} .feed-grid{grid-template-columns:1fr;}
+    .wincard-wrap{grid-template-columns:1fr;} .cg{grid-template-columns:1fr;}
+    .ledger{grid-template-columns:1fr;} .ledger .half:first-child{border-right:none;border-bottom:1px solid var(--hair);}
+  }
+  @media(max-width:760px){
+    .sidebar{display:none;} main{padding:18px 16px 80px;}
+    .momentum{flex-direction:column;align-items:flex-start;} .mom-flame{margin-left:0;}
+    .frow,.trow,.post-card{grid-template-columns:1fr;} .usercard{display:flex;gap:12px;text-align:left;align-items:center;border-right:none;border-bottom:1px solid var(--hair);}
+    .uc-avatar{margin:0;} .uc-stats{display:none;}
+  }
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="topbar-left">
-    <span style="font-size:18px;">🎵</span>
-    <h1>Songfinch Milestone Tracker</h1>
-  </div>
-  <div class="topbar-right">
-    <span class="sync-info" id="sync-info"></span>
-    <button onclick="loadSheet()">↻ Refresh</button>
-    <button class="btn-primary" onclick="sendDailyDigest()">Slack digest →</button>
-  </div>
-</div>
-
-<div class="container">
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('dashboard')">Dashboard</button>
-    <button class="tab-btn" onclick="switchTab('nardwuar')">Nardwuar lab</button>
-    <button class="tab-btn" onclick="switchTab('settings')">Settings</button>
-  </div>
-
-  <!-- DASHBOARD -->
-  <div id="panel-dashboard" class="panel">
-    <div class="filter-row" style="margin-bottom:1rem;">
-      <input class="search-bar" type="text" id="search" placeholder="Search artists..." oninput="renderAll()" style="width:220px;">
-      <select id="filter-milestone" onchange="renderAll()" style="width:180px;">
-        <option value="">All milestones</option>
-        <option value="5">Near 5</option>
-        <option value="10">Near 10</option>
-        <option value="15">Near 15</option>
-        <option value="25">Near 25</option>
-        <option value="50">Near 50</option>
-        <option value="100">Near 100</option>
-        <option value="500">Near 500</option>
-        <option value="1000">Near 1,000</option>
-        <option value="1500">Near 1,500</option>
-        <option value="2000">Near 2,000</option>
-      </select>
-      <select id="filter-sort" onchange="renderAll()" style="width:160px;">
-        <option value="closest">Closest to milestone</option>
-        <option value="most">Most songs</option>
-        <option value="least">Least songs</option>
-        <option value="alpha">A → Z</option>
-      </select>
+<aside class="sidebar">
+  <div class="profile">
+    <img class="avatar" src="https://i.pravatar.cc/200?img=12" alt="">
+    <div class="pname">Marcus Vale</div>
+    <div class="purl" onclick="toast('Opening your public profile')">
+      songfinch.com/a/marcus-vale
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 17L17 7M9 7h8v8"/></svg>
     </div>
-    <div class="grid-4" id="dash-metrics"></div>
+    <div class="pstatus"><span class="dot"></span> Active · Folk &amp; Americana</div>
+  </div>
+  <nav>
+    <a id="nav-dashboard" class="active" onclick="navTo('dashboard')">Dashboard</a>
+    <a onclick="openMessages()">Inbox <span class="tag">3</span></a>
+    <a onclick="toast('Reviews (concept)')">Reviews</a>
+    <div class="sep"></div>
+    <a id="nav-community" onclick="navTo('community')">Community</a>
+    <a id="nav-creative" onclick="navTo('creative')">Creative <span class="tag">2</span></a>
+    <div class="sep"></div>
+    <a onclick="toast('Manage account (concept)')">Manage account</a>
+    <a onclick="toast('Signed out (concept)')">Sign out</a>
+  </nav>
+  <div class="foot">
+    <a onclick="toast('Contact artist support (concept)')">Contact artist support</a>
+    <a onclick="toast('Artist FAQ (concept)')">Artist FAQ</a>
+  </div>
+</aside>
 
-    <div id="close-section" style="margin-bottom:1.5rem;display:none;">
-      <div class="section-head">
-        <span class="section-title">🔥 Near a milestone</span>
-        <span class="section-count" id="close-count"></span>
+<main>
+  <!-- ════════════════ DASHBOARD ════════════════ -->
+  <section class="view show" id="view-dashboard">
+    <div class="pf-head">
+      <h1 class="dash-h">Performance</h1>
+      <div class="pf-toggle">
+        <button class="on" id="pf-del" onclick="setPerf('delivery')">Artist Delivery</button>
+        <button id="pf-dis" onclick="setPerf('discovery')">Customer Discovery</button>
       </div>
-      <div class="artist-grid" id="dash-close"></div>
+      <div></div>
     </div>
 
-    <div class="divider" id="dash-divider" style="display:none;"></div>
+    <div class="kpi" id="kpi-delivery">
+      <span class="kpi-kebab" onclick="toast('Customize metrics (concept)')">⋮</span>
+      <div class="kpi-cell"><div class="kpi-n mono">1,840</div><div class="kpi-l">Songs Completed <span class="kpi-q" title="Total songs you've delivered">?</span></div></div>
+      <div class="kpi-cell"><div class="kpi-n mono">$221.4K</div><div class="kpi-l">Earnings <span class="kpi-q" title="Net earnings to date">?</span></div></div>
+      <div class="kpi-cell"><div class="kpi-n mono">4.97 <span class="kpi-dot dot-g"></span></div><div class="kpi-l">Star Rating <span class="kpi-q" title="Average customer rating">?</span></div></div>
+      <div class="kpi-cell"><div class="kpi-n mono">96% <span class="kpi-dot dot-g"></span></div><div class="kpi-l">Acceptance Rate <span class="kpi-q" title="How often you take offered orders">?</span></div></div>
+      <div class="kpi-cell"><div class="kpi-n mono">98% <span class="kpi-dot dot-g"></span></div><div class="kpi-l">On-Time Delivery <span class="kpi-q" title="Songs delivered by the due date">?</span></div></div>
+      <div class="kpi-cell"><div class="kpi-n mono">13% <span class="kpi-dot dot-y"></span></div><div class="kpi-l">Revision Rate <span class="kpi-q" title="Orders that came back for a revision">?</span></div></div>
+    </div>
 
-    <div id="all-section">
-      <div class="section-head">
-        <span class="section-title">All artists</span>
-        <span class="section-count" id="all-count"></span>
+    <div class="kpi" id="kpi-discovery" style="display:none">
+      <span class="kpi-kebab" onclick="toast('Customize metrics (concept)')">⋮</span>
+      <div class="kpi-cell"><div class="kpi-n mono">1,284 <span class="kpi-dot dot-g"></span></div><div class="kpi-l">Profile Views, 7d <span class="kpi-q" title="Customers who viewed your profile this week">?</span></div></div>
+      <div class="kpi-cell"><div class="kpi-n mono">38</div><div class="kpi-l">Feed Appearances <span class="kpi-q" title="Times your video showed in the customer feed">?</span></div></div>
+      <div class="kpi-cell"><div class="kpi-n mono">9 <span class="kpi-dot dot-m"></span></div><div class="kpi-l">Boosts Received <span class="kpi-q" title="Peers who boosted your posts this week">?</span></div></div>
+      <div class="kpi-cell"><div class="kpi-n mono">52</div><div class="kpi-l">Profile Saves <span class="kpi-q" title="Customers who saved you for later">?</span></div></div>
+      <div class="kpi-cell"><div class="kpi-n mono">Top 8% <span class="kpi-dot dot-g"></span></div><div class="kpi-l">Discovery Rank <span class="kpi-q" title="Where you sit in customer discovery">?</span></div></div>
+      <div class="kpi-cell"><div class="kpi-n mono">2x</div><div class="kpi-l">Featured This Month <span class="kpi-q" title="Times you were hand-picked into the feed">?</span></div></div>
+    </div>
+
+    <!-- DELIVERY: orders + feed on-ramp -->
+    <div id="block-delivery">
+      <div class="feedbar">
+        <span class="em">🎬</span>
+        <div><div class="fb-t">6 peers posted to the feed today</div><div class="fb-s">Boost a few between orders. It counts as a real play for them, and it climbs your discovery rank.</div></div>
+        <button class="btn btn-amber" onclick="navTo('community')">Open the feed</button>
       </div>
-      <div class="artist-grid" id="dash-artists"></div>
-      <div id="load-more-wrap" style="text-align:center;margin-top:1rem;display:none;">
-        <button onclick="showMore()">Show more artists</button>
+      <h1 class="dash-h" style="font-size:22px;margin-top:6px">Orders <span style="font-size:15px;color:var(--sub);cursor:pointer" onclick="toast('Search orders (concept)')">🔍</span></h1>
+      <div class="ord-tabs" id="ordTabs"></div>
+      <div class="ord-wrap" id="ordWrap"></div>
+      <div class="ord-total" id="ordTotal"></div>
+    </div>
+
+    <!-- DISCOVERY: the on-ramp to the feed -->
+    <div id="block-discovery" style="display:none">
+      <div class="feedbar" style="padding:20px 24px">
+        <span class="em">🎬</span>
+        <div><div class="fb-t" style="font-size:16px">You're in the feed customers swipe to find artists</div><div class="fb-s">This is where discovery happens. Post, get boosted, climb. The artists in the top of the feed get the orders.</div></div>
+        <button class="btn btn-amber" onclick="navTo('community')">Open the feed</button>
+      </div>
+      <h1 class="dash-h" style="font-size:22px;margin-top:6px">Recent discovery activity</h1>
+      <div class="card disc-list" id="discList"></div>
+    </div>
+  </section>
+
+  <!-- ════════════════ COMMUNITY ════════════════ -->
+  <section class="view" id="view-community">
+    <h1 class="page">Community <button class="whatsthis" onclick="toggleWhats()">what's this?</button></h1>
+    <p class="page-sub">The Songfinch artist world. See who's around, lift each other up, and turn your real wins into momentum that travels off the platform.</p>
+    <div class="whats" id="whats">
+      <b>This is the artist community.</b> The feed pulls in two things: <b>External SF</b> is what artists post on their own Instagram, TikTok, and Facebook. <b>Internal SF</b> is video made for the Songfinch feed. When you hit Boost on someone's release, you go support it on the real platform, and they see the lift. Generous in here gets you boosted out there.
+    </div>
+
+    <!-- MOMENTUM STRIP -->
+    <div class="momentum">
+      <div class="mom-left">
+        <div class="mom-k">Your week</div>
+        <div class="mom-h">You're in motion</div>
+      </div>
+      <div class="mom-steps" id="momSteps"></div>
+      <div class="mom-flame">
+        <div class="n mono" id="momFlame">3</div>
+        <div class="l">week streak</div>
       </div>
     </div>
-  </div>
 
-  <!-- NARDWUAR -->
-  <div id="panel-nardwuar" class="panel" style="display:none;">
-    <div class="section-card">
-      <label>Select artist to research</label>
-      <select id="sel-artist" onchange="selectNard(this.value)" style="max-width:400px;"></select>
-    </div>
-    <div id="nard-content"></div>
-  </div>
-
-  <!-- SETTINGS -->
-  <div id="panel-settings" class="panel" style="display:none;">
-    <div style="max-width:520px;">
-      <div class="section-card">
-        <label style="font-size:13px;font-weight:600;color:#444;margin-bottom:8px;">Google Sheet CSV URL</label>
-        <input type="text" id="cfg-csv" placeholder="https://docs.google.com/spreadsheets/...output=csv">
-        <p style="font-size:11px;color:#aaa;margin-top:6px;">File → Share → Publish to web → CSV → copy URL</p>
+    <!-- HUB -->
+    <div class="hub">
+      <div class="globe-card">
+        <h2>1,300 artists, one room</h2>
+        <p>Every dot is a Songfinch artist somewhere tonight. You're part of something big.</p>
+        <div class="globe-wrap">
+          <div class="globe"><div class="map"></div>
+            <div class="city" style="top:50%;left:26%"><span class="cdot"></span></div>
+            <div class="city" style="top:42%;left:50%"><span class="cdot"></span></div>
+            <div class="city" style="top:38%;left:67%"><span class="cdot"></span></div>
+            <div class="city" style="top:58%;left:45%"><span class="cdot"></span></div>
+            <div class="city" style="top:63%;left:61%"><span class="cdot"></span></div>
+            <div class="city" style="top:67%;left:33%"><span class="cdot"></span></div>
+          </div>
+        </div>
+        <div class="globe-stat"><b>1,300</b> artists · <b>47</b> states · <b>12</b> countries · <b id="onlineNow">214</b> online now</div>
       </div>
-      <div class="section-card">
-        <label style="font-size:13px;font-weight:600;color:#444;margin-bottom:8px;">OpenAI API key (for Nardwuar lab)</label>
-        <input type="password" id="cfg-openai" placeholder="sk-proj-...">
-        <p style="font-size:11px;color:#aaa;margin-top:6px;"><a href="https://platform.openai.com/api-keys" target="_blank" style="color:#2563eb;">Get your key at platform.openai.com →</a></p>
-      </div>
-      <div class="section-card">
-        <label style="font-size:13px;font-weight:600;color:#444;margin-bottom:8px;">Slack webhook URL (free)</label>
-        <input type="text" id="cfg-slack" placeholder="https://hooks.slack.com/services/...">
-        <p style="font-size:11px;margin-top:6px;"><a href="https://api.slack.com/messaging/webhooks" target="_blank" style="color:#2563eb;">Create a free incoming webhook →</a></p>
-      </div>
-      <div class="section-card">
-        <label style="font-size:13px;font-weight:600;color:#444;margin-bottom:4px;">Alert threshold</label>
-        <p style="font-size:12px;color:#888;margin-bottom:12px;">Flag artists within this many songs of a milestone</p>
-        <div style="display:flex;align-items:center;gap:14px;">
-          <input type="range" id="cfg-thresh" min="1" max="20" value="5" step="1" style="flex:1;width:auto;" oninput="document.getElementById('thresh-out').textContent=this.value+' songs'">
-          <span id="thresh-out" style="font-size:14px;font-weight:600;min-width:54px;">5 songs</span>
+      <div class="hub-side">
+        <div class="card live-card">
+          <span class="live-tag"><span class="live-dot"></span>Live now · 38 watching</span>
+          <h3>AMA: Touring on a budget</h3>
+          <p>Desmond Cole is taking questions live. Drop in before it wraps.</p>
+          <button class="btn btn-dark btn-sm" onclick="toast('Joining the live AMA (concept)')">Join the AMA</button>
+        </div>
+        <div class="card hubrow">
+          <div class="feat-av" style="background-image:url('https://i.pravatar.cc/120?img=47')"></div>
+          <div style="flex:1"><div class="hr-t">Featured this week: Emily Kelly</div><div class="hr-s">3,500 songs in · spotlight on the homepage</div></div>
+          <button class="btn btn-ghost btn-sm" onclick="toast('Opening the spotlight (concept)')">View</button>
+        </div>
+        <div class="card hubrow" style="cursor:pointer" onclick="openMessages()">
+          <div class="hr-ic" style="background:var(--mint-soft)">💬<span class="badge">3</span></div>
+          <div style="flex:1"><div class="hr-t">Peer messages</div><div class="hr-s">3 new · June, Dani, Rico</div></div>
+          <button class="btn btn-ghost btn-sm">Open</button>
         </div>
       </div>
-      <button class="btn-primary" onclick="saveSettings()" style="width:100%;padding:10px;">Save settings →</button>
+    </div>
+
+    <!-- BOOST LEDGER -->
+    <h2 class="section-label">Your boost ledger <span class="hint">give-get, this week</span></h2>
+    <div class="card ledger">
+      <div class="half">
+        <div class="led-k">Boosts you gave</div>
+        <div class="led-n led-give mono" id="ledGive">12</div>
+        <div class="led-s">You showed up for 12 peers. They felt it.</div>
+      </div>
+      <div class="half">
+        <div class="led-k">Boosts you got back</div>
+        <div class="led-n led-get mono" id="ledGet">9</div>
+        <div class="led-s">9 artists boosted your work in return.</div>
+        <div class="led-bar"><div class="led-fill" id="ledFill" style="width:75%"></div></div>
+      </div>
+      <div class="led-note">You're <b>35 boosts</b> from cracking the top 5 this week. Top 5 get their post picked for Songfinch's socials and a profile boost on songfinch.com.</div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <h2 class="section-label">Top supporters this week <span class="hint">the artists who give back most get rewarded first</span></h2>
+    <div class="card" id="leadCard"></div>
+    <div class="perks">
+      <span class="perk">🏆 <b>Your post</b> picked for Songfinch's socials</span>
+      <span class="perk">⚡ <b>Early access</b> to new briefs</span>
+      <span class="perk">📈 <b>Profile boost</b> on songfinch.com for a week</span>
+      <span class="perk">🎖️ <b>Creator badge</b> on your posts</span>
+    </div>
+    <p class="perk-note">We hack our own algorithm on purpose. The artists who lift everyone else get lifted first. Generous in here means boosted out there.</p>
+
+    <!-- SEGMENT: feed / board -->
+    <div class="seg">
+      <button class="on" id="seg-reel" onclick="setMode('reel')">🎬 The feed</button>
+      <button id="seg-feed" onclick="setMode('feed')">🗂 Grid</button>
+      <button id="seg-board" onclick="setMode('board')">💬 Board</button>
+    </div>
+
+    <!-- IMMERSIVE REEL -->
+    <div id="mode-reel">
+      <div class="reel" id="reel">
+        <div class="reel-head">
+          <div><div class="rh-t">The Songfinch feed</div><div class="rh-s">The same feed customers swipe to discover artists. Boost a peer and it counts as a real play.</div></div>
+          <div class="reel-head-r"><span class="reel-count" id="reelCount">1 / 10</span><button class="reel-iconbtn" onclick="reelFull()" title="Expand">⤢</button></div>
+        </div>
+        <div class="reel-stage" id="reelStage">
+          <div class="reel-track" id="reelTrack"></div>
+          <div class="reel-dots" id="reelDots"></div>
+          <div class="reel-nav"><button class="reel-chev" onclick="reelGo(-1)">↑</button><button class="reel-chev" onclick="reelGo(1)">↓</button></div>
+          <div class="reel-hint up">↑<span>previous</span></div>
+          <div class="reel-hint down"><span>swipe up for next</span>↓</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FEED -->
+    <div id="mode-feed" style="display:none">
+      <div class="share-cta">
+        <span class="em">🎙</span>
+        <div><h3>Got a real win?</h3><p>A release, a show, a milestone. Post it, and watch the room show up for you. Then turn it into a card for your own socials.</p></div>
+        <button class="btn btn-dark" onclick="openShare()">Post a win</button>
+      </div>
+      <div class="sortbar">
+        <button class="sort on" data-sort="hot" onclick="setSort('hot')">🔥 Hot</button>
+        <button class="sort" data-sort="recent" onclick="setSort('recent')">🆕 Recent</button>
+        <button class="sort" data-sort="best" onclick="setSort('best')">⭐ Best</button>
+        <div class="view-switch">
+          <button class="vs on" data-vm="grid" onclick="setVM('grid')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Grid</button>
+          <button class="vs" data-vm="list" onclick="setVM('list')"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="3" rx="1"/><rect x="3" y="10.5" width="18" height="3" rx="1"/><rect x="3" y="17" width="18" height="3" rx="1"/></svg>Compact</button>
+        </div>
+      </div>
+      <div class="filters" id="filters">
+        <button class="f on" data-filter="all">All</button>
+        <button class="f" data-filter="external">External SF</button>
+        <button class="f" data-filter="internal">Internal SF</button>
+        <span class="fdiv"></span><span class="flabel">Genre</span>
+        <button class="f" data-filter="pop">Pop</button>
+        <button class="f" data-filter="rnb">R&amp;B</button>
+        <button class="f" data-filter="country">Country</button>
+        <button class="f" data-filter="folk">Folk</button>
+        <span class="fdiv"></span><span class="flabel">Video</span>
+        <button class="f" data-filter="live">Live</button>
+        <button class="f" data-filter="studio">In-studio</button>
+        <button class="f" data-filter="pov">POV</button>
+      </div>
+      <div class="feed-grid" id="feedGrid"></div>
+    </div>
+
+    <!-- BOARD -->
+    <div id="mode-board" style="display:none"></div>
+  </section>
+
+  <!-- ════════════════ CREATIVE ════════════════ -->
+  <section class="view" id="view-creative">
+    <h1 class="page">Creative</h1>
+    <p class="page-sub">Briefs, hooks, and a card maker that turns your wins into posts your followers actually share. The simplest content you can make routes your own audience straight to your profile.</p>
+
+    <div class="creative-intro">
+      <h2>Make once, get lifted everywhere</h2>
+      <p>Pick a brief, grab a hook, post it on your socials. Featured posts get boosted by the community and picked up for Songfinch's channels. The work you already do becomes the work that finds your next customer.</p>
+    </div>
+
+    <h2 class="section-label">Open briefs</h2>
+    <div id="camps"></div>
+
+    <!-- WIN CARD GENERATOR -->
+    <h2 class="section-label">Win card maker <span class="hint">turn any milestone into a shareable post</span></h2>
+    <div class="card" style="padding:22px">
+      <div class="wincard-wrap">
+        <div class="wc-controls">
+          <div class="field">
+            <label>What happened?</label>
+            <div class="wc-types" id="wcTypes">
+              <button class="wc-type on" data-t="release">New release</button>
+              <button class="wc-type" data-t="milestone">Milestone</button>
+              <button class="wc-type" data-t="show">Live show</button>
+              <button class="wc-type" data-t="onsf">On Songfinch</button>
+            </div>
+          </div>
+          <div class="field"><label>Headline</label><input id="wcHead" maxlength="60" value="My first single is out everywhere"></div>
+          <div class="field"><label>The detail (date, number, place)</label><input id="wcMeta" maxlength="48" value="Out Friday · voice memo to master in 72 hours"></div>
+          <div class="field"><label>Your handle</label><input id="wcHandle" maxlength="30" value="@marcusvalemusic"></div>
+          <div class="wc-actions">
+            <button class="btn btn-amber" onclick="downloadCard()">Save image</button>
+            <button class="btn btn-ghost" onclick="copyCaption()">Copy caption</button>
+            <button class="btn btn-mint" onclick="toast('Posting to your socials (concept)')">Post to my socials</button>
+          </div>
+        </div>
+        <div class="wc-preview">
+          <div id="winCard"></div>
+          <p style="font-size:11.5px;color:var(--sub);margin-top:10px;line-height:1.5">The card carries a quiet Songfinch mark and a live count of artists who boosted you. Your followers see the win. Other artists see the room behind it, and want in.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ===== SHARE OVERLAY ===== -->
+<div class="overlay" id="ov-share">
+  <div class="modal">
+    <div id="shareForm">
+      <h3>Post a win</h3>
+      <p class="sub">The community shows up for each other here. Keep it real.</p>
+      <label>What kind of win?</label>
+      <select id="shKind">
+        <option value="release">New release</option>
+        <option value="milestone">Milestone</option>
+        <option value="show">Live show</option>
+      </select>
+      <label>Where did you post it?</label>
+      <select id="shPlat">
+        <option value="ig">Instagram</option>
+        <option value="tt">TikTok</option>
+        <option value="fb">Facebook</option>
+        <option value="sf">Songfinch feed only</option>
+      </select>
+      <label>Say something</label>
+      <textarea id="shCap" placeholder="Tell the room what's going on..."></textarea>
+      <label>Genre</label>
+      <select id="shGenre"><option value="folk">Folk</option><option value="pop">Pop</option><option value="rnb">R&amp;B</option><option value="country">Country</option></select>
+      <div class="row">
+        <button class="btn btn-dark" style="flex:1;justify-content:center" onclick="submitShare()">Post to the feed</button>
+        <button class="btn btn-ghost" onclick="closeOverlay('ov-share')">Cancel</button>
+      </div>
+    </div>
+    <div id="shareSuccess" style="display:none">
+      <div class="success">
+        <div class="ring">✓</div>
+        <h3 style="text-align:center">It's live in the feed</h3>
+        <p class="sub" style="text-align:center">Your peers can boost it now. Want to turn it into a card for your own socials?</p>
+        <div class="row" style="justify-content:center">
+          <button class="btn btn-amber" onclick="closeOverlay('ov-share');navTo('creative');document.getElementById('winCard').scrollIntoView({behavior:'smooth',block:'center'})">Make a win card</button>
+          <button class="btn btn-ghost" onclick="closeOverlay('ov-share')">Done</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
+<!-- ===== MESSAGES DRAWER ===== -->
+<div class="drawer" id="drawer">
+  <div class="drawer-head"><h3>Peer messages</h3><button class="x" onclick="closeMessages()">×</button></div>
+  <div class="msg-list" id="msgList"></div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-const DEFAULT_CSV='https://docs.google.com/spreadsheets/d/e/2PACX-1vT2qHbguGnVQK1aLrQ5Cq7ZElW0o-p9F4Gc9AX0QuBQV3reg8R94lC_gy9X2JDbZBUXHPu7Ef0WGYkC/pub?gid=0&single=true&output=csv';
-const MILESTONES=[5,10,15,25,50,100,500,1000,1500,2000];
-const SKIP_NAMES=['artist_name','artist name','name','artistname'];
-const COLORS=[['#dbeafe','#1e40af'],['#dcfce7','#166534'],['#ede9fe','#4c1d95'],['#fce7f3','#831843'],['#fef3c7','#78350f'],['#fee2e2','#7f1d1d'],['#cffafe','#164e63'],['#d1fae5','#065f46'],['#fef9c3','#713f12'],['#f3e8ff','#581c87']];
-let cfg={csvUrl:DEFAULT_CSV,slackWebhook:'',alertThreshold:5,openaiKey:'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'};
-let artists=[],insights={},nardIdx=null,visibleCount=60;
+/* ============ STORAGE (graceful) ============ */
+const store={
+  get(k,d){try{const v=localStorage.getItem('sfaw_'+k);return v?JSON.parse(v):d;}catch(e){return (this._m&&this._m[k])??d;}},
+  set(k,v){try{localStorage.setItem('sfaw_'+k,JSON.stringify(v));}catch(e){this._m=this._m||{};this._m[k]=v;}},
+  _m:{}
+};
 
-function loadCfg(){try{const s=localStorage.getItem('sf_cfg_v2');if(s)cfg={...cfg,...JSON.parse(s)};}catch{}}
-function saveCfg(){try{localStorage.setItem('sf_cfg_v2',JSON.stringify(cfg));}catch{}}
+/* ============ ICONS ============ */
+const PLAT={
+  ig:'<span class="plat ig"><svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.2.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.2.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 3.7a6.1 6.1 0 100 12.2 6.1 6.1 0 000-12.2zm0 10a3.9 3.9 0 110-7.8 3.9 3.9 0 010 7.8zm7.8-10.2a1.4 1.4 0 11-2.8 0 1.4 1.4 0 012.8 0z"/></svg></span>',
+  fb:'<span class="plat fb"><svg viewBox="0 0 24 24"><path d="M24 12a12 12 0 10-13.9 11.9v-8.4h-3V12h3V9.4c0-3 1.8-4.7 4.6-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9V12h3.3l-.5 3.5h-2.8v8.4A12 12 0 0024 12z"/></svg></span>',
+  tt:'<span class="plat tt"><svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg></span>',
+  sf:'<span class="plat sf">♪</span>'
+};
+const platName={ig:'Instagram',fb:'Facebook',tt:'TikTok',sf:'the Songfinch feed'};
+const platReal={ig:'Instagram',fb:'Facebook',tt:'TikTok',sf:'Songfinch'};
+const BADGE={release:{t:'Release',c:'c-rel'},show:{t:'Show',c:'c-show'},milestone:{t:'Milestone',c:'c-mile'},feature:{t:'Feature',c:'c-feat'}};
+const VT={live:{t:'Live',c:'c-live'},studio:{t:'In-studio',c:'c-studio'},pov:{t:'POV',c:'c-pov'},bts:{t:'BTS',c:'c-bts'}};
+const GEN={pop:{t:'Pop'},rnb:{t:'R&B'},country:{t:'Country'},folk:{t:'Folk'}};
+const GRAD={pop:'linear-gradient(135deg,#ff8da1,#a14bd8)',rnb:'linear-gradient(135deg,#7a5cff,#1b2a5e)',country:'linear-gradient(135deg,#f0b454,#b5651d)',folk:'linear-gradient(135deg,#7bc6a4,#1f5c46)'};
 
-function mi(count){
-  const next=MILESTONES.find(m=>m>count)??null;
-  const prev=[...MILESTONES].reverse().find(m=>m<=count)??0;
-  const diff=next!==null?next-count:0;
-  const pct=next!==null?Math.min(100,Math.max(0,Math.round(((count-prev)/(next-prev))*100))):100;
-  return{next,prev,diff,pct};
+/* ============ FEED DATA ============ */
+let POSTS=[
+  {n:"Maya Reyes",h:"@mayareyesmusic · 1d",av:"https://i.pravatar.cc/120?img=45",plat:"ig",src:"external",g:"pop",k:"release",hot:true,score:112,
+   cap:'Dropped "Goldenrod" today, my first single since joining Songfinch. Would mean the world if you gave it a spin.',
+   link:{t:"Goldenrod · Maya Reyes",s:"Spotify · single",hex:"#1db954",ch:"♫"},supports:112,comments:18,lift:31,liftPlat:"Spotify"},
+  {n:"Brittany Hadley",h:"@brittanyhadley · 1d",av:"https://i.pravatar.cc/120?img=32",plat:"sf",src:"internal",g:"pop",vtype:"live",hot:true,score:184,
+   cap:"Live at the Basement last night. One take, no autotune, full room. Filmed for the Songfinch feed.",video:true,dur:"3:12",supports:184,comments:22,lift:0},
+  {n:"Desmond Cole",h:"@descolesongs · 2d",av:"https://i.pravatar.cc/120?img=14",plat:"tt",src:"external",g:"country",k:"show",score:67,
+   cap:"Midwest run next month. Chicago 7/12, Milwaukee 7/14, Indy 7/15. If you're a Songfinch artist in any of these cities, come through.",
+   supports:67,comments:9,lift:14,liftPlat:"TikTok"},
+  {n:"Hunter Jordan",h:"@hunterjordan · 2d",av:"https://i.pravatar.cc/120?img=53",plat:"sf",src:"internal",g:"folk",vtype:"studio",score:95,
+   cap:'Tracking "Lucky One" from voice memo to master. The moment the harmony locked in still gives me chills.',video:true,dur:"4:48",supports:95,comments:11,lift:0},
+  {n:"Sofia Tran",h:"@sofiatranmusic · 3d",av:"https://i.pravatar.cc/120?img=49",plat:"ig",src:"external",g:"rnb",k:"milestone",hot:true,score:203,
+   cap:"Just hit my 50th Songfinch song. Fifty strangers trusted me with their stories this year. Thank you to everyone in here.",
+   supports:203,comments:41,lift:58,liftPlat:"Instagram"},
+  {n:"Emily Kelly",h:"@emilykellymusic · 3d",av:"https://i.pravatar.cc/120?img=47",plat:"sf",src:"internal",g:"pop",vtype:"pov",score:98,
+   cap:"POV: you open a stranger's story and have to turn it into a song they'll cry to. My favorite kind of pressure.",video:true,dur:"1:54",supports:98,comments:14,lift:0},
+  {n:"Theo Park",h:"@theoparkmusic · 4d",av:"https://i.pravatar.cc/120?img=68",plat:"ig",src:"external",g:"folk",k:"milestone",score:88,
+   cap:"Week 8 and I finally crossed 100 songs. To everyone in the Start Here thread who told me to push through the dead zone: you were right.",
+   supports:88,comments:19,lift:22,liftPlat:"Instagram"},
+  {n:"Nina Vega",h:"@ninavegamusic · 1w",av:"https://i.pravatar.cc/120?img=44",plat:"ig",src:"external",g:"rnb",k:"release",score:130,
+   cap:'New single "Velvet" is live. Wrote it at 3am after a session that wrecked me. Hope it finds whoever needs it.',
+   link:{t:"Velvet · Nina Vega",s:"Spotify · single",hex:"#1db954",ch:"♫"},supports:130,comments:21,lift:40,liftPlat:"Spotify"},
+  {n:"Marcus Lee",h:"@marcusleemusic · 1w",av:"https://i.pravatar.cc/120?img=15",plat:"ig",src:"external",g:"country",k:"milestone",score:241,
+   cap:"Crossed 100k streams this week. A year ago I was playing to my dog in the garage. Thank you, truly.",
+   supports:241,comments:35,lift:71,liftPlat:"Instagram"},
+  {n:"Andre Soto",h:"@andresotomusic · 2w",av:"https://i.pravatar.cc/120?img=33",plat:"sf",src:"internal",g:"folk",vtype:"studio",score:61,
+   cap:"One mic, one take, no edits. Filmed a stripped version in the studio for the feed. This is the honest one.",video:true,dur:"2:39",supports:61,comments:7,lift:0}
+];
+
+/* ============ FEED STATE ============ */
+let sortMode="hot",viewMode="grid",filter="all";
+const savedBoosts=store.get('boosts',{});
+POSTS.forEach((p,i)=>{p._boosted=!!savedBoosts[i]; if(p._boosted) p.lift=(p.lift||0)+1;});
+
+function matchF(p){return filter==="all"||p.src===filter||p.g===filter||p.vtype===filter;}
+function sortP(list){const a=[...list];
+  if(sortMode==="recent")return a;
+  if(sortMode==="best")return a.sort((x,y)=>y.score-x.score);
+  return a.sort((x,y)=>(y.hot?1:0)-(x.hot?1:0)||y.score-x.score);}
+function badgeFor(p){return p.src==="internal"?`<span class="chip ${VT[p.vtype].c}">${VT[p.vtype].t}</span>`:`<span class="chip ${BADGE[p.k].c}">${BADGE[p.k].t}</span>`;}
+
+function gridCard(p,idx){
+  const media=`<div class="post-media" style="background:${GRAD[p.g]}">${p.video?'<div class="play">▶</div>':''}
+    <div class="post-badges">${PLAT[p.plat]}<span style="display:flex;gap:5px">${p.hot?'<span class="chip chip-hot">🔥 Hot</span>':''}${badgeFor(p)}</span></div></div>`;
+  const link=p.link?`<a class="shared-link" onclick="return false" href="#"><span class="sl-ic" style="background:${p.link.hex}">${p.link.ch}</span><div><div class="sl-t">${p.link.t}</div><div class="sl-s">${p.link.s}</div></div><span class="sl-go">↗</span></a>`:'';
+  const liftHtml=p.lift>0?`<span class="lift"><span class="dot"></span>${p.lift} artists boosted this in 24h</span>`:'';
+  const boostable=p.src==="external";
+  const boostBtn=boostable
+    ? `<button class="btn act-boost ${p._boosted?'boosted':''}" onclick="boost(${idx},this)">${p._boosted?'✓ Boosted':'⚡ Boost'}</button>`
+    : `<button class="btn act-boost" onclick="watchInternal(this)">▶ Watch</button>`;
+  return `<article class="post card" data-genre="${p.g}">
+    ${media}
+    <div class="post-body">
+      <div class="post-who"><div class="mini-av" style="background-image:url('${p.av}')"></div>
+        <div style="flex:1"><div class="who-name">${esc(p.n)} <span class="chip ${p.src==='internal'?VT[p.vtype].c:'c-rel'}" style="font-size:8px">${GEN[p.g].t}</span></div><div class="who-meta">${p.h}</div></div>
+        <span class="iconbtn" style="border:none;padding:4px" onclick="toast('Reported. A human reviews this within the day')">⋯</span></div>
+      <p class="post-cap">${p.cap}</p>${link}
+      <div class="post-stats"><span>${p.src==='internal'?'Internal feed · '+p.dur:p.supports+' supports · '+p.comments+' comments'}</span>${liftHtml}</div>
+      <div class="post-actions">${boostBtn}
+        <button class="iconbtn" onclick="toggleComposer(this)" title="Comment">💬</button>
+        <button class="iconbtn" onclick="messageArtist('${esc(p.n)}')" title="Message">✉</button></div>
+      <div class="composer"><input placeholder="Comment, posts as @marcusvalemusic" onkeydown="if(event.key==='Enter')postComment(this,'${p.plat}')"><button class="btn btn-dark btn-sm" onclick="postComment(this,'${p.plat}')">Post</button></div>
+    </div></article>`;
 }
-function col(i){return COLORS[i%COLORS.length];}
-function ini(n){return(n||'?').split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2)||'?';}
-function isHeaderRow(r){
-  const name=(r[1]||'').toLowerCase().trim();
-  return SKIP_NAMES.includes(name)||name==='';
+
+function renderFeed(){
+  const list=sortP(POSTS.filter(matchF));
+  const grid=document.getElementById("feedGrid");
+  grid.className="feed-grid"+(viewMode==="list"?" list":"");
+  grid.innerHTML=list.map(p=>gridCard(p,POSTS.indexOf(p))).join("")+
+    `<div class="cta-card"><div class="em">🎙</div><div class="big">Share what you're up to</div><p>A release, a show, a milestone. The room shows up for each other.</p><button class="btn btn-amber" onclick="openShare()">Post a win</button></div>`;
 }
 
-function parseCSV(text){
-  return text.trim().split('\n').map(row=>{
-    const cols=[];let cur='',inQ=false;
-    for(let i=0;i<row.length;i++){
-      const c=row[i];
-      if(c==='"'){inQ=!inQ;}
-      else if(c===','&&!inQ){cols.push(cur.trim());cur='';}
-      else{cur+=c;}
-    }
-    cols.push(cur.trim());
-    return cols;
+/* ============ BOOST LOOP (the infectious mechanic) ============ */
+function toggleBoost(idx){
+  const p=POSTS[idx];const boosts=store.get('boosts',{});
+  if(p._boosted){p._boosted=false;p.lift=Math.max(0,p.lift-1);delete boosts[idx];store.set('boosts',boosts);return false;}
+  p._boosted=true;p.lift=(p.lift||0)+1;boosts[idx]=true;store.set('boosts',boosts);bumpLedger();return true;
+}
+function boost(idx,btn){
+  const on=toggleBoost(idx);
+  if(on){const p=POSTS[idx];const where=p.link?p.link.s.split(' · ')[0]:platReal[p.plat];
+    toast(`Opening <b>${esc(p.n.split(' ')[0])}'s</b> post on ${where}. Your boost counts as a real ${where} ${p.link?'play':'view'}.`);}
+  renderFeed();
+}
+function watchInternal(btn){toast('Opening the Songfinch video (concept)');}
+
+/* ============ IMMERSIVE REEL ============ */
+const CRED={
+  "Maya Reyes":"Pop · Los Angeles · 50 songs in","Brittany Hadley":"Pop · live performance","Desmond Cole":"Country · Chicago",
+  "Hunter Jordan":"Folk · Nashville · voice memo to master","Sofia Tran":"R&B · 50 Songfinch songs","Emily Kelly":"Pop · 3,500+ songs",
+  "Theo Park":"Folk · week 8 · 100 songs in","Nina Vega":"R&B · New York","Marcus Lee":"Country · 100k streams","Andre Soto":"Folk · stripped session",
+  "Marcus Vale":"Folk & Americana · 1,840 songs"
+};
+const COBRAND={"Maya Reyes":"The Voice · Season 22","Marcus Lee":"American Idol · Top 10","Brittany Hadley":"The Voice · Top 24"};
+let reelIndex=0,reelActive=false,reelBuilt=false,wheelLock=false,dragY=null;
+
+function reelSlide(p,i){
+  const cobrand=COBRAND[p.n]?`<span class="cobrand"><span class="cb-dot"></span>${COBRAND[p.n]}</span>`:'<span></span>';
+  const cred=CRED[p.n]||(GEN[p.g]?GEN[p.g].t:'');
+  const liftN=p.lift||0;
+  const cta=p.src==='internal'?'See the full video':'View profile';
+  return `<div class="reel-slide">
+    <div class="reel-bg" style="background-image:url('${p.av}')"></div>
+    <div class="reel-port" style="background-image:url('${p.av}')">
+      <div class="reel-top">${cobrand}${PLAT[p.plat]}</div>
+      ${p.video?'<div class="reel-play" onclick="toast(\'Playing (concept)\')">▶</div>':''}
+      <div class="reel-bottom">
+        <div class="reel-name">${esc(p.n)} <span class="chip ${p.src==='internal'?VT[p.vtype].c:'c-rel'}">${GEN[p.g].t}</span></div>
+        <div class="reel-cred">${cred}</div>
+        <div class="reel-cap">${p.cap}</div>
+        <button class="reel-cta" onclick="toast('Opening ${esc(p.n.split(' ')[0])}\\'s profile (concept)')">${cta} ↗</button>
+      </div>
+      <div class="reel-rail">
+        <div class="rail-btn rail-boost ${p._boosted?'on':''}" onclick="reelBoost(${i})"><span class="ic">${p._boosted?'✓':'⚡'}</span><span class="ct">${liftN}</span></div>
+        <div class="rail-btn" onclick="toast('Comments (concept)')"><span class="ic">💬</span><span class="ct">${p.comments||0}</span></div>
+        <div class="rail-btn" onclick="messageArtist('${esc(p.n)}')"><span class="ic">✉</span><span class="ct">DM</span></div>
+        <div class="rail-btn" onclick="toast('Shared')"><span class="ic">↗</span><span class="ct">Share</span></div>
+      </div>
+    </div></div>`;
+}
+function buildReel(){
+  document.getElementById('reelTrack').innerHTML=POSTS.map((p,i)=>reelSlide(p,i)).join('');
+  document.getElementById('reelDots').innerHTML=POSTS.map((_,i)=>`<i class="${i===reelIndex?'on':''}"></i>`).join('');
+  reelBuilt=true;applyReel();
+}
+function applyReel(){
+  const track=document.getElementById('reelTrack');if(!track)return;
+  track.style.transform=`translateY(${-reelIndex*100}%)`;
+  document.querySelectorAll('#reelDots i').forEach((d,i)=>d.classList.toggle('on',i===reelIndex));
+  document.getElementById('reelCount').textContent=`${reelIndex+1} / ${POSTS.length}`;
+}
+function reelGo(d){reelIndex=Math.max(0,Math.min(POSTS.length-1,reelIndex+d));applyReel();}
+function reelBoost(i){
+  const on=toggleBoost(i);const p=POSTS[i];const where=p.link?p.link.s.split(' · ')[0]:platReal[p.plat];
+  if(on)toast(`Boosted <b>${esc(p.n.split(' ')[0])}</b> on ${where}. Counts as a real ${where} ${p.video?'view':'play'}.`);
+  const slide=document.querySelectorAll('.reel-slide')[i];if(!slide)return;
+  const b=slide.querySelector('.rail-boost');b.classList.toggle('on',on);
+  b.querySelector('.ic').textContent=on?'✓':'⚡';b.querySelector('.ct').textContent=p.lift||0;
+}
+function reelFull(){const w=document.getElementById('reel');const full=w.classList.toggle('full');
+  document.body.style.overflow=full?'hidden':'';w.querySelectorAll('.reel-chev').forEach(c=>c.style.display=full?'flex':'none');applyReel();}
+(function reelControls(){
+  const stage=document.getElementById('reelStage');if(!stage)return;
+  stage.addEventListener('wheel',e=>{if(!reelActive)return;e.preventDefault();if(wheelLock)return;wheelLock=true;reelGo(e.deltaY>0?1:-1);setTimeout(()=>wheelLock=false,560);},{passive:false});
+  stage.addEventListener('pointerdown',e=>{dragY=e.clientY;});
+  stage.addEventListener('pointerup',e=>{if(dragY==null)return;const dy=e.clientY-dragY;if(Math.abs(dy)>50)reelGo(dy<0?1:-1);dragY=null;});
+  document.addEventListener('keydown',e=>{
+    if(!reelActive||!document.getElementById('view-community').classList.contains('show'))return;
+    if(e.key==='ArrowDown'){e.preventDefault();reelGo(1);}
+    if(e.key==='ArrowUp'){e.preventDefault();reelGo(-1);}
+    if(e.key==='Escape'&&document.getElementById('reel').classList.contains('full'))reelFull();
   });
+})();
+
+function bumpLedger(){
+  let g=store.get('led_give',12)+1;store.set('led_give',g);
+  document.getElementById('ledGive').textContent=g;
+  const get=store.get('led_get',9);
+  document.getElementById('ledFill').style.width=Math.min(100,Math.round(get/g*100))+'%';
+  // momentum
+  refreshMomentum();
 }
 
-async function loadSheet(){
-  document.getElementById('sync-info').innerHTML='<span class="spinner">↻</span> syncing...';
-  try{
-    const res=await fetch(cfg.csvUrl||DEFAULT_CSV);
-    if(!res.ok)throw new Error('HTTP '+res.status);
-    const text=await res.text();
-    const rows=parseCSV(text);
-    artists=rows
-      .filter(r=>!isHeaderRow(r))
-      .filter(r=>(r[1]||'').trim().length>0)
-      .map((r,i)=>({
-        idx:i,
-        id:(r[0]||'').toString().trim(),
-        name:(r[1]||'').trim(),
-        count:parseInt((r[20]||'0').replace(/,/g,'').replace(/[^0-9]/g,''))||0,
-        location:(r[17]||'').trim()
-      }))
-      .filter(a=>a.name.length>0);
-    document.getElementById('sync-info').textContent='Synced '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-    visibleCount=60;
-    renderDash();
-    renderNardSelect();
-  }catch(e){
-    document.getElementById('sync-info').textContent='Sync failed';
-    document.getElementById('dash-artists').innerHTML=`<div style="grid-column:1/-1;background:#fef2f2;border:1px solid #fca5a5;border-radius:12px;padding:1.5rem;"><p style="color:#b91c1c;font-weight:600;margin-bottom:4px;">Could not load sheet</p><p style="color:#b91c1c;font-size:12px;">${e.message}</p></div>`;
-  }
-}
-
-function getFiltered(){
-  const q=(document.getElementById('search')?.value||'').toLowerCase();
-  const mf=document.getElementById('filter-milestone')?.value||'';
-  const sort=document.getElementById('filter-sort')?.value||'closest';
-  let list=artists.filter(a=>!q||a.name.toLowerCase().includes(q)||a.id.includes(q));
-  if(mf){const m=parseInt(mf);list=list.filter(a=>{const{next}=mi(a.count);return next===m;});}
-  list.sort((a,b)=>{
-    if(sort==='most')return b.count-a.count;
-    if(sort==='least')return a.count-b.count;
-    if(sort==='alpha')return a.name.localeCompare(b.name);
-    return(mi(a.count).diff||9999)-(mi(b.count).diff||9999);
-  });
-  return list;
-}
-
-function artistCardHTML(a){
-  const info=mi(a.count);const[bg,tx]=col(a.idx);
-  const t=cfg.alertThreshold;
-  const isHit=MILESTONES.includes(a.count);
-  const isClose=info.next&&info.diff<=t;
-  const barClr=isHit?'#22c55e':isClose?'#8b5cf6':info.pct>=80?'#a78bfa':'#3b82f6';
-  return`<div class="artist-card${isHit?' hit':isClose?' close':''}">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-      <div class="avatar" style="background:${bg};color:${tx};">${ini(a.name)}</div>
-      <div style="flex:1;min-width:0;">
-        <div class="artist-name">${a.name}</div>
-        <div class="artist-id">ID: ${a.id}</div>
-      </div>
-      <div>
-        <div class="song-count">${a.count.toLocaleString()}</div>
-        <div class="song-label">songs</div>
-      </div>
-    </div>
-    ${isHit?'<span class="badge badge-success">Milestone hit!</span>':''}
-    ${isClose&&!isHit?`<span class="badge badge-warn">${info.diff} away from ${info.next}</span>`:''}
-    ${info.next?`
-      <div class="progress-labels"><span>${info.prev}</span><span>${info.pct}%</span><span>${info.next}</span></div>
-      <div class="progress-track"><div class="progress-fill" style="width:${info.pct}%;background:${barClr};"></div></div>
-    `:`<p style="font-size:11px;color:#16a34a;margin-top:2px;">All milestones achieved!</p>`}
-    <div class="card-actions">
-      <button style="flex:1;" onclick="slackOne(${a.idx})">Slack →</button>
-      <button style="flex:1;" onclick="openNard(${a.idx})">Nardwuar →</button>
-    </div>
-  </div>`;
-}
-
-function renderDash(){
-  const t=cfg.alertThreshold;
-  const close=artists.filter(a=>{const{diff,next}=mi(a.count);return next&&diff<=t;});
-  const hits=artists.filter(a=>MILESTONES.includes(a.count));
-  const total=artists.reduce((s,a)=>s+a.count,0);
-
-  document.getElementById('dash-metrics').innerHTML=`
-    <div class="metric-card"><div class="metric-label">Artists on roster</div><div class="metric-value">${artists.length.toLocaleString()}</div></div>
-    <div class="metric-card"><div class="metric-label">Near milestone</div><div class="metric-value" style="color:${close.length?'#7c3aed':'inherit'}">${close.length.toLocaleString()}</div></div>
-    <div class="metric-card"><div class="metric-label">Milestones hit</div><div class="metric-value" style="color:#16a34a">${hits.length.toLocaleString()}</div></div>
-    <div class="metric-card"><div class="metric-label">Total songs</div><div class="metric-value">${total.toLocaleString()}</div></div>
-  `;
-
-  const closeSection=document.getElementById('close-section');
-  const closeSorted=[...close].sort((a,b)=>mi(a.count).diff-mi(b.count).diff);
-  if(close.length){
-    closeSection.style.display='block';
-    document.getElementById('close-count').textContent=close.length+' artists';
-    document.getElementById('dash-close').innerHTML=closeSorted.map(artistCardHTML).join('');
-    document.getElementById('dash-divider').style.display='block';
-  }else{
-    closeSection.style.display='none';
-    document.getElementById('dash-divider').style.display='none';
-  }
-  renderAll();
-}
-
-function renderAll(){
-  const list=getFiltered();
-  const shown=list.slice(0,visibleCount);
-  document.getElementById('all-count').textContent=list.length.toLocaleString()+' artists';
-  document.getElementById('dash-artists').innerHTML=shown.length?shown.map(artistCardHTML).join(''):`<div class="empty">No artists match your search.</div>`;
-  const lmw=document.getElementById('load-more-wrap');
-  lmw.style.display=list.length>visibleCount?'block':'none';
-}
-
-function showMore(){visibleCount+=60;renderAll();}
-
-function switchTab(t){
-  document.querySelectorAll('.panel').forEach(p=>p.style.display='none');
-  document.getElementById('panel-'+t).style.display='block';
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase().startsWith(t==='nardwuar'?'nard':t)));
-  if(t==='nardwuar')renderNardSelect();
-  if(t==='settings')applySettingsForm();
-}
-
-function renderNardSelect(){
-  const sel=document.getElementById('sel-artist');if(!sel)return;
-  sel.innerHTML='<option value="">— choose an artist —</option>'+artists.map(a=>`<option value="${a.idx}">${a.name} (${a.count} songs)</option>`).join('');
-  if(nardIdx!==null){sel.value=nardIdx;renderNardContent();}
-}
-function selectNard(v){nardIdx=v===''?null:parseInt(v);renderNardContent();}
-function openNard(idx){nardIdx=idx;switchTab('nardwuar');}
-
-function renderNardContent(){
-  const el=document.getElementById('nard-content');if(!el)return;
-  if(nardIdx===null){el.innerHTML='';return;}
-  const a=artists.find(x=>x.idx===nardIdx);if(!a){el.innerHTML='';return;}
-  const info=mi(a.count);const[bg,tx]=col(a.idx);const data=insights[a.idx];
-  el.innerHTML=`
-    <div class="section-card">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;">
-        <div class="avatar" style="width:48px;height:48px;font-size:16px;background:${bg};color:${tx};">${ini(a.name)}</div>
-        <div>
-          <div style="font-size:18px;font-weight:700;">${a.name}</div>
-          <div style="font-size:13px;color:#888;margin-top:2px;">${a.count.toLocaleString()} songs · ${a.location?a.location+' · ':''} ${info.next?info.diff+' from next milestone ('+info.next+')':'all milestones hit!'}</div>
-        </div>
-      </div>
-      <button id="nard-btn" class="btn-primary" onclick="generateInsights()" style="width:100%;padding:10px;">${data?'Regenerate intel →':'Generate Nardwuar intel →'}</button>
-      <p style="font-size:11px;color:#aaa;margin-top:6px;">AI-generated — always verify fun facts before sending to the artist</p>
-    </div>
-    ${data?renderInsights(data,a):''}`;
-}
-
-function renderInsights(data,a){
-  if(data.error)return`<p style="color:#b91c1c;font-size:13px;padding:.5rem 0;">${data.error}</p>`;
-  return`
-    <div class="nard-card">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-        <span style="font-size:13px;font-weight:600;color:#444;">Fun facts</span>
-        ${data.confidence?`<span class="badge badge-info">${data.confidence} confidence</span>`:''}
-      </div>
-      <ol>${(data.facts||[]).map(f=>{
-        const isVerified=f.startsWith('VERIFIED:');
-        const isSuggested=f.startsWith('SUGGESTED:');
-        const color=isVerified?'#166534':isSuggested?'#92400e':'#444';
-        const tag=isVerified?'<span style="font-size:10px;font-weight:700;background:#dcfce7;color:#166534;padding:1px 5px;border-radius:4px;margin-right:4px;">VERIFIED</span>':isSuggested?'<span style="font-size:10px;font-weight:700;background:#fef3c7;color:#92400e;padding:1px 5px;border-radius:4px;margin-right:4px;">SUGGESTED</span>':'';
-        const text=f.replace(/^VERIFIED:\s*/,'').replace(/^SUGGESTED:\s*/,'');
-        return`<li style="color:${color};">${tag}${text}</li>`;
-      }).join('')}</ol>
-      <p style="font-size:11px;color:#aaa;margin-top:10px;">VERIFIED = high confidence · SUGGESTED = educated guess, verify before using</p>
-    </div>
-    <div class="nard-card">
-      <div style="font-size:13px;font-weight:600;color:#444;margin-bottom:12px;">Personalized gift ideas</div>
-      <ol>${(data.gifts||[]).map(g=>`<li>${g}</li>`).join('')}</ol>
-    </div>
-    ${data.note?`<div class="nard-note">
-      <div style="font-size:13px;font-weight:600;color:#166534;margin-bottom:8px;">Personalized celebration note</div>
-      <p>${data.note}</p>
-      <button onclick="composeEmail(${a.idx})" style="margin-top:12px;">Open in email client →</button>
-    </div>`:''}`;
-}
-
-async function generateInsights(){
-  const btn=document.getElementById('nard-btn');
-  if(btn){btn.textContent='Searching the web...';btn.disabled=true;}
-  const a=artists.find(x=>x.idx===nardIdx);if(!a)return;
-  const OPENAI_KEY=cfg.openaiKey||'';
-  if(!OPENAI_KEY){insights[nardIdx]={error:'Add your OpenAI API key in Settings first.'};renderNardContent();return;}
-
-  const city=a.location?a.location.trim():'';
-  const searches=[
-    `${a.name} music${city?' '+city:''}`,
-    `${a.name} musician biography early life`,
-    `${a.name} singer songwriter${city?' '+city:''} background`,
-    `"${a.name}" music interview`,
+/* ============ MOMENTUM ============ */
+function refreshMomentum(){
+  const shipped=store.get('mom_song',true);
+  const posted=store.get('mom_post',false);
+  const given=store.get('led_give',12);
+  const boostedEnough=given>=3;
+  const steps=[
+    {done:shipped,icon:'🎵',label:shipped?'Shipped a song':'Ship a song this week',k:'mom_song'},
+    {done:boostedEnough,icon:'⚡',label:boostedEnough?`Boosted ${given} peers`:'Boost 3 peers',k:'boost'},
+    {done:posted,icon:'📣',label:posted?'Posted a win':'Post a win',k:'mom_post'}
   ];
-
-  try{
-    let allResearch='';
-
-    // Try web search first (gpt-4o-search-preview), fall back to knowledge-only
-    for(const q of searches){
-      if(btn)btn.textContent=`Searching: "${q}"...`;
-      try{
-        const r=await fetch('https://api.openai.com/v1/chat/completions',{
-          method:'POST',
-          headers:{'Content-Type':'application/json','Authorization':'Bearer '+OPENAI_KEY},
-          body:JSON.stringify({
-            model:'gpt-4o-search-preview',
-            web_search_options:{search_context_size:'high'},
-            messages:[{
-              role:'user',
-              content:`Search for information about the musician "${a.name}"${city?' from '+city:''}. Find: early life, hometown, family background, schooling, first instruments, first bands, career milestones, influences, personal interests, hobbies, fun facts, social media presence, awards, notable collaborations. Go all the way back. Be specific, not generic.`
-            }]
-          })
-        });
-        const d=await r.json();
-        if(d.error){
-          // If search model not available, fall through to knowledge-only
-          if(d.error.code==='model_not_found'||d.error.type==='invalid_request_error') break;
-          continue;
-        }
-        const txt=d.choices?.[0]?.message?.content||'';
-        if(txt)allResearch+=`\n\n--- Search: "${q}" ---\n${txt}`;
-      }catch{}
-    }
-
-    // If web search got nothing, fall back to GPT-4o knowledge mode
-    if(!allResearch){
-      if(btn)btn.textContent='Researching from knowledge base...';
-      try{
-        const r=await fetch('https://api.openai.com/v1/chat/completions',{
-          method:'POST',
-          headers:{'Content-Type':'application/json','Authorization':'Bearer '+OPENAI_KEY},
-          body:JSON.stringify({
-            model:'gpt-4o',max_tokens:800,
-            messages:[{
-              role:'user',
-              content:`Tell me everything you know about the musician "${a.name}"${city?' from '+city:''}. Include: early life, hometown, background, first instruments, first bands, career highlights, personal interests, style, genre, fun facts. Only state things you are genuinely confident are true. If this is a lesser-known independent artist with limited public info, say so clearly rather than guessing.`
-            }]
-          })
-        });
-        const d=await r.json();
-        if(!d.error) allResearch=d.choices?.[0]?.message?.content||'';
-      }catch{}
-    }
-
-    if(!allResearch) allResearch='Limited public information found for this artist.';
-
-    if(btn)btn.textContent='Synthesizing intel...';
-    const res=await fetch('https://api.openai.com/v1/chat/completions',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+OPENAI_KEY},
-      body:JSON.stringify({
-        model:'gpt-4o',max_tokens:1200,
-        messages:[
-          {role:'system',content:`You are Nardwuar the Human Serviette — the greatest music researcher alive. You dig DEEP. You find things people forgot about themselves — their first band name, their high school, their childhood town, their first instrument, their parents' jobs, early YouTube videos, old SoundCloud accounts, local news features, obscure collaborations. You go ALL the way back. You only state things you found from real sources. You clearly label VERIFIED (from a real source) vs SUGGESTED (inferred). Never fabricate. Respond only in valid JSON, no markdown.`},
-          {role:'user',content:`Artist: "${a.name}"${city?' — from '+city:''}\nSongs on Songfinch: ${a.count}\n\nReal web research gathered:\n${allResearch}\n\nNow synthesize a full Nardwuar-style intel package as JSON only:\n{\n"facts":[\n"VERIFIED: [specific fact from web research — the more obscure and specific the better]",\n"VERIFIED: [another real fact — go back as far as possible, childhood, first band, school, hometown details]",\n"VERIFIED: [a third real fact] OR SUGGESTED: [clearly labeled inference if insufficient data]"\n],\n"gifts":[\n"[Hyper-specific gift tied to a real fact about them — not generic. e.g. if they grew up in Austin, a vintage Austin music scene poster. If they played violin first, a rare vintage rosin. Be creative and personal.]",\n"Gift 2","Gift 3","Gift 4","Gift 5"\n],\n"note":"Warm, specific, personal 2-sentence celebration note from Songfinch referencing something real about their journey",\n"confidence":"high / medium / low — based on how much real data was found"\n}`}
-        ]
-      })
-    });
-    const d=await res.json();
-    if(d.error)throw new Error(d.error.message);
-    const txt=d.choices?.[0]?.message?.content||'{}';
-    insights[nardIdx]=JSON.parse(txt.replace(/```json|```/g,'').trim());
-  }catch(e){insights[nardIdx]={error:'Generation failed — '+e.message};}
-  renderNardContent();
+  document.getElementById('momSteps').innerHTML=steps.map(s=>
+    `<div class="mstep ${s.done?'done':'todo'}" ${s.done?'':`onclick="${s.k==='mom_post'?'openShare()':s.k==='mom_song'?"toast('Open your queue to take an order (concept)')":"setMode('feed')"}"`}>
+      <span class="ic">${s.done?'✓':s.icon}</span><b>${s.label}</b></div>`).join('');
+  const allDone=steps.every(s=>s.done);
+  document.getElementById('momFlame').textContent=allDone?'4':'3';
 }
 
-function composeEmail(idx){
-  const a=artists.find(x=>x.idx===idx);const data=insights[idx];if(!a||!data)return;
-  const s=encodeURIComponent(`Congrats on ${a.count} songs completed!`);
-  const b=encodeURIComponent(`${data.note||''}\n\nFun fact: ${(data.facts||[])[0]||''}\n\nWith love,\nThe Songfinch Team`);
-  window.open(`mailto:?subject=${s}&body=${b}`);
+/* ============ LEADERBOARD ============ */
+const LEAD=[
+  {r:1,n:"Maya Reyes",av:"https://i.pravatar.cc/80?img=45",sub:"82 boosts given · 19 comments",badge:"Curator",score:82,top:true},
+  {r:2,n:"Theo Brooks",av:"https://i.pravatar.cc/80?img=53",sub:"74 boosts given · 31 comments",badge:"Curator",score:74,top:true},
+  {r:3,n:"Sofia Tran",av:"https://i.pravatar.cc/80?img=49",sub:"69 boosts given · 24 comments",badge:"Curator",score:69,top:true},
+  {r:4,n:"June Okafor",av:"https://i.pravatar.cc/80?img=44",sub:"61 boosts given · 18 comments",badge:"Curator",score:61,top:true},
+  {r:5,n:"Dani Cross",av:"https://i.pravatar.cc/80?img=20",sub:"58 boosts given · 27 comments",badge:"Curator",score:58,top:true}
+];
+function renderLead(){
+  const give=store.get('led_give',12);
+  let html=LEAD.map(l=>`<div class="lead-row ${l.top?'top':''}">
+    <span class="lead-rank mono">${l.r}</span>
+    <div class="lead-av" style="background-image:url('${l.av}')"></div>
+    <div style="flex:1"><div class="lead-name">${l.n}</div><div class="lead-sub">${l.sub}</div></div>
+    <span class="lead-badge">${l.badge}</span><span class="lead-score">${l.score}</span></div>`).join('');
+  html+=`<div class="lead-row you">
+    <span class="lead-rank mono">14</span>
+    <div class="lead-av" style="background-image:url('https://i.pravatar.cc/80?img=12')"></div>
+    <div style="flex:1"><div class="lead-name">You (Marcus Vale)</div><div class="lead-sub">${give} boosts given · ${58-give>0?58-give:0} more to crack the top 5</div></div>
+    <span class="lead-score" style="color:var(--sub)">${give}</span></div>`;
+  document.getElementById('leadCard').innerHTML=html;
 }
 
-async function slackOne(idx){
-  if(!cfg.slackWebhook){alert('Add your Slack webhook in Settings first.');return;}
-  const a=artists.find(x=>x.idx==idx);if(!a)return;
-  const info=mi(a.count);
-  const isHit=MILESTONES.includes(a.count);
-  const isClose=info.next&&info.diff<=cfg.alertThreshold;
-  const text=isHit
-    ?`🎉 *MILESTONE HIT!* *${a.name}* just completed their *${a.count}th song!* Time to celebrate.`
-    :isClose?`🚨 *MILESTONE ALERT* — *${a.name}* is only *${info.diff} song${info.diff===1?'':'s'} away* from their *${info.next} songs milestone!* Start prepping something special.`
-    :`📊 *${a.name}* — ${a.count.toLocaleString()} songs completed (${info.pct}% to ${info.next})`;
-  try{await fetch(cfg.slackWebhook,{method:'POST',mode:'no-cors',body:JSON.stringify({text})});showToast('Slack alert sent!');}
-  catch{showToast('Slack failed — check webhook URL','error');}
+/* ============ FEED CONTROLS ============ */
+function setSort(s){sortMode=s;document.querySelectorAll('.sort').forEach(b=>b.classList.toggle('on',b.dataset.sort===s));renderFeed();}
+function setVM(v){viewMode=v;document.querySelectorAll('.vs').forEach(b=>b.classList.toggle('on',b.dataset.vm===v));renderFeed();}
+document.getElementById('filters').addEventListener('click',e=>{
+  const b=e.target.closest('.f');if(!b)return;
+  document.querySelectorAll('.f').forEach(x=>x.classList.remove('on'));b.classList.add('on');filter=b.dataset.filter;renderFeed();});
+function toggleComposer(btn){const c=btn.closest('.post-body').querySelector('.composer');c.classList.toggle('open');if(c.classList.contains('open'))c.querySelector('input').focus();}
+function postComment(el,plat){const composer=el.closest('.composer');const input=composer.querySelector('input');const t=input.value.trim();if(!t)return;
+  const line=document.createElement('div');line.className='comment-line';
+  line.innerHTML=`<b>You:</b> ${esc(t)}<br><span class="cl-meta">✓ Posted to ${platReal[plat]||'the feed'} as @marcusvalemusic</span>`;
+  composer.insertAdjacentElement('beforebegin',line);input.value='';toast(`Comment posted to ${platReal[plat]||'the feed'}`);}
+function messageArtist(n){openMessages();toast('Opening a message to '+n);}
+
+/* ============ MODE: feed/board ============ */
+function setMode(m){
+  ['reel','feed','board'].forEach(x=>{const el=document.getElementById('mode-'+x);if(el)el.style.display=m===x?'':'none';});
+  document.getElementById('seg-reel').classList.toggle('on',m==='reel');
+  document.getElementById('seg-feed').classList.toggle('on',m==='feed');
+  document.getElementById('seg-board').classList.toggle('on',m==='board');
+  reelActive=(m==='reel');
+  if(m==='reel'){if(!reelBuilt)buildReel();else applyReel();}
+  if(m==='board'&&!boardInit){boardInit=true;goBoard('index');}
 }
 
-async function sendDailyDigest(){
-  if(!cfg.slackWebhook){alert('Add your Slack webhook in Settings first.');return;}
-  if(!artists.length){showToast('No artists loaded — hit Refresh first','warn');return;}
-  const t=cfg.alertThreshold;
-  const close=artists.filter(a=>{const{diff,next}=mi(a.count);return next&&diff<=t;});
-  const hits=artists.filter(a=>MILESTONES.includes(a.count));
-  const lines=[`📋 *Daily Milestone Digest* — ${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}`,''];
-  if(hits.length){lines.push('🎉 *Milestones hit:*');hits.forEach(a=>lines.push(`  • *${a.name}* — ${a.count} songs!`));lines.push('');}
-  if(close.length){lines.push(`🔥 *${close.length} artists near a milestone:*`);close.slice(0,20).forEach(a=>{const{diff,next}=mi(a.count);lines.push(`  • *${a.name}* — ${diff} song${diff===1?'':'s'} from ${next}`);});if(close.length>20)lines.push(`  ...and ${close.length-20} more`);lines.push('');}
-  if(!hits.length&&!close.length)lines.push('✅ No artists near a milestone right now.\n');
-  lines.push(`*Roster: ${artists.length.toLocaleString()} artists · ${artists.reduce((s,a)=>s+a.count,0).toLocaleString()} total songs*`);
-  try{
-    await fetch(cfg.slackWebhook,{method:'POST',mode:'no-cors',body:JSON.stringify({text:lines.join('\n')})});
-    showToast('Daily digest sent to Slack!');
-  }catch{showToast('Digest failed','error');}
+/* ============ FORUM ============ */
+const ME="marcus-vale";
+const members={
+  "emily-kelly":{name:"Emily Kelly",songs:3575,joined:"Mar 2021",loc:"Nashville, TN",online:true,avatar:"https://i.pravatar.cc/120?img=47",sig:"3,500+ songs and counting. Slide into a co-write anytime."},
+  "marcus-vale":{name:"Marcus Vale",songs:1840,joined:"Aug 2021",loc:"Austin, TX",online:true,avatar:"https://i.pravatar.cc/120?img=12",sig:"Folk & Americana. Always tweaking my mic chain."},
+  "salgorhythm":{name:"Salgorhythm",songs:42,joined:"May 2026",loc:"Brooklyn, NY",online:true,avatar:"https://i.pravatar.cc/120?img=33",sig:"Comedy songs. Yes that's a real category now. You're welcome."},
+  "dani-cross":{name:"Dani Cross",songs:610,joined:"Jan 2023",loc:"Denver, CO",online:false,avatar:"https://i.pravatar.cc/120?img=20",sig:"Pop / R&B. Revisions are a love language."},
+  "theo-park":{name:"Theo Park",songs:101,joined:"Feb 2026",loc:"Portland, OR",online:false,avatar:"https://i.pravatar.cc/120?img=68",sig:"Week 8 and the dashboard finally makes sense."},
+  "june-okafor":{name:"June Okafor",songs:2210,joined:"Jun 2020",loc:"London, UK",online:true,avatar:"https://i.pravatar.cc/120?img=44",sig:"UK market. Happy to talk timezones & turnaround."},
+  "rico-mendez":{name:"Rico Mendez",songs:18,joined:"Jun 2026",loc:"Miami, FL",online:false,avatar:"https://i.pravatar.cc/120?img=15",sig:""},
+  "sofia-lindqvist":{name:"Sofia Lindqvist",songs:430,joined:"Sep 2024",loc:"Stockholm, SE",online:false,avatar:"https://i.pravatar.cc/120?img=49",sig:"Cinematic / orchestral. I will talk reverb for hours."},
+  "team-songfinch":{name:"Songfinch Team",songs:0,joined:"Mar 2019",loc:"Chicago, IL",online:true,avatar:"https://i.pravatar.cc/120?img=8",sig:"Official Songfinch account. We read every thread."}
+};
+function rank(songs,uid){
+  if(uid==="team-songfinch")return{label:"Songfinch Staff",color:"#0c7a5e",stars:"★★★★★"};
+  if(songs>=1500)return{label:"Hall of Fame",color:"#b76a12",stars:"★★★★★"};
+  if(songs>=600)return{label:"Platinum Pen",color:"#7b5cff",stars:"★★★★"};
+  if(songs>=200)return{label:"Pro Songwriter",color:"#c2761b",stars:"★★★"};
+  if(songs>=50)return{label:"Established",color:"#0c7a5e",stars:"★★"};
+  if(songs>=10)return{label:"Rising Writer",color:"#5c5c57",stars:"★"};
+  return{label:"Newcomer",color:"#a39c90",stars:""};
+}
+const categories=[
+  {name:"Songfinch HQ",forums:["announcements","start-here"]},
+  {name:"The Writers' Room",forums:["recording","pricing"]},
+  {name:"The Business",forums:["more-orders","live-shows"]},
+  {name:"The Green Room",forums:["intros","off-topic"]}
+];
+const forums={
+  "announcements":{name:"Announcements & Updates",desc:"Official notes from the Songfinch team. You can reply."},
+  "start-here":{name:"New Artist? Start Here",desc:"First 8 weeks on the platform. The stuff nobody tells you up front."},
+  "recording":{name:"Recording & Production",desc:"Mics, vocal chains, mixing, the home-studio money pit."},
+  "pricing":{name:"Pricing & Earnings",desc:"What to charge, when to raise, how the math actually works."},
+  "more-orders":{name:"Getting More Orders",desc:"Profiles, selection rate, showing up in customer discovery."},
+  "live-shows":{name:"Live Shows & Promo",desc:"Selling custom songs from the stage and off the platform."},
+  "intros":{name:"Introduce Yourself",desc:"New here? Say hi. We don't bite (much)."},
+  "off-topic":{name:"Off-Topic",desc:"Coffee, gear lust, life. The break room."}
+};
+let nextTid=100;
+let threads=store.get('threads',null)||[
+  {id:1,forum:"announcements",title:"Welcome to the Artist Community",author:"team-songfinch",announce:true,
+   posts:[{author:"team-songfinch",time:"Jun 16, 2026 · 9:02 AM",body:"This is your space. Artists only, no customers, no public eyes. Ask the questions you'd never put in a support ticket.\n\nThree house rules:\n1. Be real. The whole point is honest talk between people who do this work.\n2. No poaching customers off-platform. That's the one bright line.\n3. The Songfinch Team account reads everything. If a good idea shows up here, it has a shot at becoming a real feature.\n\nGo introduce yourself in The Green Room."}]},
+  {id:3,forum:"start-here",title:"Week 3 and the orders dried up. Normal?",author:"theo-park",hot:true,
+   posts:[
+     {author:"theo-park",time:"Jun 14, 2026 · 11:20 AM",body:"First two weeks were great, had a steady trickle. Now week 3 is quiet. Did I do something wrong or is this just how it goes?"},
+     {author:"dani-cross",time:"Jun 14, 2026 · 12:05 PM",body:"You did nothing wrong. There's a real dead zone around weeks 2 to 8 where the early boost fades and you haven't built up reviews yet. The artists who push through keep their profile fresh and finish fast. Stick with it."},
+     {author:"june-okafor",time:"Jun 14, 2026 · 1:30 PM",body:"This. Week 3 is where most people quietly give up. Don't be most people. Two things that pulled me out: turned my acceptance rate way up and added a second genre so I showed up in more searches."},
+     {author:"theo-park",time:"Jun 14, 2026 · 2:10 PM",quote:{who:"june-okafor",text:"added a second genre to my profile"},body:"Wait you can have two genres? Going to fix that right now, thank you."}
+   ]},
+  {id:4,forum:"start-here",title:"The dashboard metrics explained (what actually matters)",author:"emily-kelly",pinned:true,
+   posts:[{author:"emily-kelly",time:"Jun 10, 2026 · 8:00 AM",body:"Pinning this because the same questions come up every week. Here's how I read my own dashboard after 3,500 songs:\n\nStar Rating. The one customers see first. Protect it.\nAcceptance Rate. Low acceptance means the system offers you fewer. It compounds.\nOn-Time Delivery. Green is the only acceptable color here.\nRevision Rate. High revisions usually means you're guessing at the brief instead of reading it.\n\nThe number that's NOT on the dashboard but matters most: how fast you reply to a new order. Speed is a feature."}]},
+  {id:6,forum:"pricing",title:"When did you raise your price the first time?",author:"sofia-lindqvist",
+   posts:[
+     {author:"sofia-lindqvist",time:"Jun 12, 2026 · 10:00 AM",body:"Been at the same price since I joined. Orders are steady. Part of me thinks I'm leaving money on the table, part of me is scared the orders stop if I go up. When did you all make the jump?"},
+     {author:"dani-cross",time:"Jun 12, 2026 · 11:40 AM",body:"I waited until my queue was consistently full for about a month. That's the signal. Raised it 20%, order volume barely moved, earnings jumped."},
+     {author:"emily-kelly",time:"Jun 12, 2026 · 1:00 PM",body:"Same pattern. The fear is always bigger than the drop. The customers who walk over a small bump usually weren't leaving a 5-star review anyway."}
+   ]},
+  {id:8,forum:"live-shows",title:"Sold custom songs from the merch table last weekend",author:"emily-kelly",hot:true,
+   posts:[
+     {author:"emily-kelly",time:"Jun 9, 2026 · 11:00 PM",body:"Played a small room Saturday. Put a card on the merch table with a QR code to my Songfinch profile and mentioned from stage that I write custom songs. Five orders by Sunday night.\n\nThe trick wasn't 'buy a Songfinch song.' It was 'I'll write a song just for you or someone you love.' Lead with the gift, not the platform."},
+     {author:"salgorhythm",time:"Jun 10, 2026 · 12:30 AM",body:"Stealing this for my next comedy set. 'I will write a song roasting your best friend' basically sells itself at a show."},
+     {author:"team-songfinch",time:"Jun 10, 2026 · 9:00 AM",quote:{who:"emily-kelly",text:"Lead with the gift, not the platform."},body:"Saving this exact phrasing. There may be a printable stage kit coming to make this repeatable for everyone. Watch this space."}
+   ]},
+  {id:9,forum:"intros",title:"Hi from the comedy corner — Salgorhythm here",author:"salgorhythm",
+   posts:[
+     {author:"salgorhythm",time:"Jun 8, 2026 · 3:00 PM",body:"Hey all. First comedy artist onboarded as Songfinch opens up the comedy genre. Yes you can now order a custom song that absolutely destroys your brother-in-law. Hit me with questions about the comedy lane."},
+     {author:"theo-park",time:"Jun 8, 2026 · 3:45 PM",body:"A comedy genre is wild, I love it. Do customers know what they want or do you coach the joke out of them?"},
+     {author:"salgorhythm",time:"Jun 8, 2026 · 4:20 PM",body:"90% of the brief is 'make it funny' with zero specifics. The skill is asking two good follow-ups to find the one real detail that makes it land."}
+   ]}
+];
+let boardInit=false;
+let bview={screen:"index",forum:null,thread:null};
+function persistThreads(){store.set('threads',threads);}
+function threadsIn(f){return threads.filter(t=>t.forum===f);}
+function postCount(f){return threadsIn(f).reduce((n,t)=>n+t.posts.length,0);}
+function lastPost(f){const ts=threadsIn(f);if(!ts.length)return null;let best=null;ts.forEach(t=>{const p=t.posts[t.posts.length-1];if(!best||t.id>=best.tid)best={who:p.author,when:p.time,tid:t.id};});return best;}
+function nameOf(u){return members[u]?members[u].name:u;}
+function views(t){return 30+(t.id*37%900)+t.posts.length*14;}
+function goBoard(screen,forum,thread){bview={screen,forum,thread};renderBoard();window.scrollTo({top:document.querySelector('.seg').offsetTop-20,behavior:'smooth'});}
+
+function renderBoard(){
+  const el=document.getElementById('mode-board');
+  if(bview.screen==="index")el.innerHTML=boardIndex();
+  else if(bview.screen==="forum")el.innerHTML=boardForum(bview.forum);
+  else el.innerHTML=boardThread(bview.thread);
+  bindBoard();
+}
+function boardIndex(){
+  let html=`<div class="board-bar"><div><div class="bb-t">Discussion board</div><div class="bb-s">A closed board for Songfinch artists. Ask, share, figure it out together.</div></div>
+    <button class="btn btn-dark" onclick="startTopic()">＋ Start a topic</button></div>`;
+  categories.forEach(cat=>{
+    html+=`<div class="card bcard"><div class="cat-head"><span class="em">◆</span> ${cat.name}<span class="official">${cat.name==='Songfinch HQ'?'official':''}</span></div>`;
+    cat.forums.forEach(fid=>{const f=forums[fid],lp=lastPost(fid),unread=(fid==="start-here"||fid==="live-shows");
+      html+=`<div class="frow" data-forum="${fid}"><div class="folder"><div class="ficon ${unread?'unread':''}"></div>
+        <div><div class="fname">${f.name}</div><div class="fdesc">${f.desc}</div></div></div>
+        <div class="num">${threadsIn(fid).length}<small>topics</small></div>
+        <div class="num">${postCount(fid)}<small>posts</small></div>
+        <div class="lastpost">${lp?`<b>${nameOf(lp.who)}</b><br><span class="when">${lp.when}</span>`:'<span class="when">No posts yet</span>'}</div></div>`;});
+    html+=`</div>`;});
+  return html;
+}
+function boardForum(fid){
+  const f=forums[fid];
+  const ts=[...threadsIn(fid)].sort((a,b)=>{const ap=(a.announce?2:a.pinned?1:0),bp=(b.announce?2:b.pinned?1:0);if(ap!==bp)return bp-ap;return b.id-a.id;});
+  let rows=ts.map(t=>{const last=t.posts[t.posts.length-1];const icon=t.pinned?'pin':(t.hot?'hot':'');
+    const badge=t.announce?'<span class="badge-i ann">Announce</span>':(t.pinned?'<span class="badge-i pin">Pinned</span>':'');
+    return `<div class="trow" data-thread="${t.id}"><div><div class="ticon ${icon}"></div></div>
+      <div><div class="ttitle">${badge}${esc(t.title)}</div><div class="tmeta">by ${nameOf(t.author)}</div></div>
+      <div class="tnum">${t.posts.length-1}<br><small style="font-size:9px;color:#a39c90;text-transform:uppercase">replies</small></div>
+      <div class="tlast"><b>${nameOf(last.author)}</b><br><span class="when">${last.time}</span></div></div>`;}).join('');
+  if(!ts.length)rows=`<div class="empty"><h3>No topics yet</h3>Be the first. Hit Start a topic.</div>`;
+  return `<div class="crumb"><a data-nav="index">Discussion board</a><span class="s">›</span> ${f.name}</div>
+    <div class="board-bar"><div><div class="bb-t">${f.name}</div><div class="bb-s">${f.desc}</div></div>
+      <button class="btn btn-dark" onclick="startTopic('${fid}')">＋ New topic</button></div>
+    <div id="composer"></div><div class="card bcard">${rows}</div>`;
+}
+function boardThread(tid){
+  const t=threads.find(x=>x.id===tid),f=forums[t.forum];
+  let posts=t.posts.map((p,i)=>{const m=members[p.author],r=rank(m.songs,p.author);
+    const q=p.quote?`<span class="quote"><b>${nameOf(p.quote.who)} wrote:</b><br>${esc(p.quote.text)}</span>`:'';
+    return `<div class="post-card"><div class="usercard">
+      <img class="uc-avatar" src="${m.avatar}" alt="">
+      <div class="uc-name">${m.name}</div><div class="uc-rank" style="color:${r.color}">${r.label}</div><div class="uc-stars">${r.stars}</div>
+      <div class="uc-stats"><div><b>Songs:</b> ${m.songs.toLocaleString()}</div><div><b>Joined:</b> ${m.joined}</div>${m.loc?`<div><b>From:</b> ${m.loc}</div>`:''}</div></div>
+      <div class="postbody"><div class="post-top"><span>#${i+1} · ${p.time}</span></div>
+      <div class="ptext">${q}${esc(p.body)}</div>${m.sig?`<div class="sig">— ${esc(m.sig)}</div>`:''}</div></div>`;}).join('');
+  return `<div class="crumb"><a data-nav="index">Discussion board</a><span class="s">›</span><a data-forum="${t.forum}">${f.name}</a><span class="s">›</span> ${esc(t.title)}</div>
+    <div class="board-bar"><div><div class="bb-t">${esc(t.title)}</div><div class="bb-s">${t.posts.length} posts · started by ${nameOf(t.author)}</div></div>
+      <button class="btn btn-ghost" data-forum="${t.forum}">← ${f.name}</button></div>
+    <div class="card bcard">${posts}<div class="replybox"><h3>Post a reply</h3>
+      <textarea id="replyText" placeholder="Write your reply..."></textarea>
+      <button class="btn btn-dark" id="postReply">Post reply</button>
+      <span style="font-size:12px;color:#a39c90;margin-left:8px">Posting as <b style="color:#54504a">${nameOf(ME)}</b></span></div></div>`;
+}
+function startTopic(fid){
+  if(bview.screen==='index'){goBoard('forum','start-here');setTimeout(()=>startTopic('start-here'),50);return;}
+  fid=fid||bview.forum;
+  const c=document.getElementById('composer');if(!c)return;
+  c.innerHTML=`<div class="card bcard" style="padding:16px 20px"><h3 style="font-family:'Bricolage Grotesque';font-weight:700;margin-bottom:10px">New topic in ${forums[fid].name}</h3>
+    <input class="subj" id="newSubj" placeholder="Topic title">
+    <textarea class="subj" id="newBody" placeholder="What's on your mind?" style="min-height:90px"></textarea>
+    <button class="btn btn-dark" onclick="createTopic('${fid}')">Create topic</button>
+    <button class="btn btn-ghost" onclick="document.getElementById('composer').innerHTML=''">Cancel</button></div>`;
+  document.getElementById('newSubj').focus();
+}
+function createTopic(fid){const s=document.getElementById('newSubj').value.trim(),b=document.getElementById('newBody').value.trim();if(!s||!b)return;
+  const id=++nextTid;threads.push({id,forum:fid,title:s,author:ME,posts:[{author:ME,time:nowStr(),body:b}]});persistThreads();
+  store.set('mom_post',true);refreshMomentum();goBoard('thread',null,id);toast('Topic posted to the board');}
+function bindBoard(){
+  document.querySelectorAll('#mode-board [data-forum]').forEach(el=>el.onclick=e=>{e.preventDefault();goBoard('forum',el.dataset.forum);});
+  document.querySelectorAll('#mode-board [data-thread]').forEach(el=>el.onclick=()=>goBoard('thread',null,parseInt(el.dataset.thread)));
+  document.querySelectorAll('#mode-board [data-nav="index"]').forEach(el=>el.onclick=e=>{e.preventDefault();goBoard('index');});
+  const pr=document.getElementById('postReply');
+  if(pr)pr.onclick=()=>{const txt=document.getElementById('replyText').value.trim();if(!txt)return;
+    threads.find(x=>x.id===bview.thread).posts.push({author:ME,time:nowStr(),body:txt});persistThreads();goBoard('thread',null,bview.thread);toast('Reply posted');};
 }
 
-function applySettingsForm(){
-  const f=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
-  f('cfg-csv',cfg.csvUrl);f('cfg-slack',cfg.slackWebhook);f('cfg-openai',cfg.openaiKey);
-  const t=document.getElementById('cfg-thresh');const o=document.getElementById('thresh-out');
-  if(t){t.value=cfg.alertThreshold;if(o)o.textContent=cfg.alertThreshold+' songs';}
+/* ============ CREATIVE: briefs ============ */
+const CAMPS={
+  onsf:{emoji:"🎧",title:"I'm on Songfinch",sub:"The highest-ROI post you can make. Routes your own audience to your profile.",feature:"rolling",submitted:"open",
+    brief:"Tell your followers you write custom songs on Songfinch. The simplest, highest-ROI content there is. No deadline, rolling features.",
+    prompts:[{h:'"I write custom songs now"',shots:['To camera: "You can hire me to write a song about literally anyone."','Show a 5s clip of one you\'re proud of (cleared).','CTA: "Link in bio, tell me your story."'],meta:["⏱ ~10 min to film","📱 Reel 9:16","🎯 Routes your audience"]}],
+    hooks:[{s:5,p:"It's not a [product]. It's a [emotion].",e:'"It\'s not a song. It\'s three minutes of someone finally being heard."'},{s:4,p:"I [behavior] for a living now",e:'"I write songs about strangers\' love stories for a living now"'}],
+    guides:[{t:"do",x:'Say "Songfinch" and put your profile link in bio.'},{t:"do",x:"Reuse your best cleared clips, no need to film new."},{t:"dont",x:"Call yourself a Songfinch employee. You're an independent artist on Songfinch."}]},
+  fathers:{emoji:"🧡",title:"Father's Day 2026",sub:"Dad songs, relationship-first. We feature 5 artists.",feature:"5 artists",submitted:"12",
+    brief:"Lead with the dad, not the product. Relationship-first content that makes someone think of their own father.",
+    prompts:[{h:"The first-fan angle",shots:["Tell the story of a dad song you wrote.","Play 10 seconds of the chorus (cleared).",'CTA: "Got a dad like that? Link in bio."'],meta:["⏱ ~15 min","📱 Reel 9:16","🎯 Seasonal"]}],
+    hooks:[{s:5,p:"You're the [role] who [behavior]",e:'"You\'re the kid who still calls him before every big decision"'},{s:5,p:"Forget [expected]. Try [unexpected].",e:'"Forget the tie. Get him a song that makes him ugly cry."'}],
+    guides:[{t:"do",x:"Lead with the dad. Relationship first."},{t:"do",x:"Add #ad if the post is compensated (it's in the caption pack)."},{t:"dont",x:"Share a customer's name or story that isn't cleared."}]},
+  summer:{emoji:"🌅",title:"Summer Sessions",sub:"Golden-hour live takes. Performance-forward. We feature 8.",feature:"8 artists",submitted:"3",
+    brief:"Acoustic and live takes that feel like summer. Loose, warm, real. Performance beats polish here.",
+    prompts:[{h:"Golden-hour one-take",shots:["Find the best light you've got, 6 to 8pm.","One take, one song, no cuts.","Caption: what the song means to you."],meta:["⏱ ~15 min","📱 Reel 9:16","🎯 Following"]}],
+    hooks:[{s:4,p:"POV: [relatable summer scene]",e:'"POV: the song that played all summer was written for you"'}],
+    guides:[{t:"do",x:"Performance-forward. Let people hear you."},{t:"dont",x:"Over-edit. Loose and real is the brief."}]}
+};
+function renderCamps(){
+  document.getElementById('camps').innerHTML=Object.keys(CAMPS).map(k=>{const c=CAMPS[k];
+    return `<div class="camp" id="camp-${k}"><div class="camp-head" onclick="toggleCamp('${k}')">
+      <div class="camp-emoji">${c.emoji}</div><div><div class="camp-t">${c.title}</div><div class="camp-s">${c.sub}</div></div>
+      <div class="camp-meta"><div class="mn">${c.submitted==='open'?'open':c.submitted+' in'}</div><div class="ml">${c.feature==='rolling'?'rolling':c.feature}</div></div></div>
+      <div class="camp-body">${campBody(c)}</div></div>`;}).join('');
 }
-function saveSettings(){
-  cfg={
-    csvUrl:(document.getElementById('cfg-csv').value||DEFAULT_CSV).trim(),
-    slackWebhook:(document.getElementById('cfg-slack').value||'').trim(),
-    openaiKey:(document.getElementById('cfg-openai').value||'').trim(),
-    alertThreshold:parseInt(document.getElementById('cfg-thresh').value)||5,
-  };
-  saveCfg();showToast('Settings saved!');loadSheet();
+function campBody(c){
+  const prompts=c.prompts.map(p=>`<div class="prompt"><h4>${p.h}</h4>${p.shots.map((s,i)=>`<div class="shot"><span class="n">${i+1}</span><div>${s}</div></div>`).join('')}
+    <div class="prompt-meta">${p.meta.map(m=>`<span>${m}</span>`).join('')}</div>
+    <div class="prompt-actions"><button class="btn btn-dark btn-sm" onclick="toast('Caption copied with your profile link and hashtags')">Use prompt</button></div></div>`).join('');
+  const hooks=c.hooks.map(h=>`<div class="hook"><span class="hook-score">${Array.from({length:5},(_,i)=>`<i class="${i<h.s?'fill':''}"></i>`).join('')}</span>
+    <div style="flex:1"><div class="hook-pat">${h.p}</div><div class="hook-ex">${h.e}</div></div><button class="btn btn-ghost btn-sm" onclick="toast('Hook copied')">Copy</button></div>`).join('');
+  const guides=c.guides.map(g=>`<li class="${g.t}">${g.x}</li>`).join('');
+  return `<p class="camp-brief">${c.brief}</p><div class="cg"><div><div class="brief-sub">Prompts</div>${prompts}</div>
+    <div><div class="brief-sub">Hook library</div>${hooks}<div class="brief-sub" style="margin-top:16px">Guidelines</div><ul class="guide-list">${guides}</ul></div></div>`;
+}
+function toggleCamp(k){const card=document.getElementById('camp-'+k),open=card.classList.contains('open');
+  document.querySelectorAll('.camp').forEach(c=>c.classList.remove('open'));if(!open)card.classList.add('open');}
+
+/* ============ WIN CARD ============ */
+let wcType="release";
+const WC_GRAD={release:'linear-gradient(150deg,#7a5cff,#1b2a5e)',milestone:'linear-gradient(150deg,#e0922f,#9b3d14)',show:'linear-gradient(150deg,#0c7a5e,#08382b)',onsf:'linear-gradient(150deg,#1a1a1a,#3a2a14)'};
+const WC_EYE={release:"New release",milestone:"Milestone",show:"Live show",onsf:"Now on Songfinch"};
+function renderWinCard(){
+  const head=document.getElementById('wcHead').value||"My new release";
+  const meta=document.getElementById('wcMeta').value||"";
+  const handle=document.getElementById('wcHandle').value||"@you";
+  const lift=24+ (store.get('led_give',12));
+  document.getElementById('winCard').style.background=WC_GRAD[wcType];
+  document.getElementById('winCard').innerHTML=`
+    <div class="wc-eyebrow">${WC_EYE[wcType]}</div>
+    <div class="wc-headline">${esc(head)}</div>
+    <div class="wc-meta">${esc(meta)}</div>
+    <div class="wc-spacer"></div>
+    <div class="wc-amp">
+      <div class="ava"><span style="background-image:url('https://i.pravatar.cc/48?img=45')"></span><span style="background-image:url('https://i.pravatar.cc/48?img=53')"></span><span style="background-image:url('https://i.pravatar.cc/48?img=49')"></span></div>
+      <div class="wc-amp-t">Amplified by ${lift} artists on Songfinch</div>
+    </div>
+    <div class="wc-foot"><span class="brand"><span class="b-ic">♪</span> Songfinch</span><span class="wc-handle">${esc(handle)}</span></div>`;
+}
+document.addEventListener('input',e=>{if(['wcHead','wcMeta','wcHandle'].includes(e.target.id))renderWinCard();});
+document.getElementById('wcTypes').addEventListener('click',e=>{const b=e.target.closest('.wc-type');if(!b)return;
+  document.querySelectorAll('.wc-type').forEach(x=>x.classList.remove('on'));b.classList.add('on');wcType=b.dataset.t;
+  const presets={release:["My first single is out everywhere","Out Friday · voice memo to master in 72 hours"],milestone:["50 songs. 50 stories.","One year on Songfinch · thank you"],show:["Midwest run next month","Chicago · Milwaukee · Indy"],onsf:["I write custom songs now","Tell me your story · link in bio"]};
+  document.getElementById('wcHead').value=presets[wcType][0];document.getElementById('wcMeta').value=presets[wcType][1];renderWinCard();});
+function copyCaption(){const head=document.getElementById('wcHead').value;const cap=`${head} 🎶 Written and recorded by me on Songfinch. Tell me your story, link in bio. ${document.getElementById('wcHandle').value}`;
+  try{navigator.clipboard.writeText(cap);}catch(e){}toast('Caption copied. Profile link and hashtags included');}
+function downloadCard(){
+  const card=document.getElementById('winCard');const w=800,h=1000;
+  const head=esc(document.getElementById('wcHead').value);const meta=esc(document.getElementById('wcMeta').value);const handle=esc(document.getElementById('wcHandle').value);
+  const grads={release:['#7a5cff','#1b2a5e'],milestone:['#e0922f','#9b3d14'],show:['#0c7a5e','#08382b'],onsf:['#1a1a1a','#3a2a14']}[wcType];
+  const lift=24+store.get('led_give',12);
+  function wrap(t,n){const words=t.split(' ');const lines=[];let cur='';words.forEach(w=>{if((cur+' '+w).length>n){lines.push(cur);cur=w;}else cur=cur?cur+' '+w:w;});if(cur)lines.push(cur);return lines;}
+  const hl=wrap(head,16);
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">
+    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${grads[0]}"/><stop offset="1" stop-color="${grads[1]}"/></linearGradient></defs>
+    <rect width="${w}" height="${h}" rx="36" fill="url(#g)"/>
+    <text x="64" y="110" fill="#fff" opacity="0.85" font-family="DM Mono,monospace" font-size="26" font-weight="700" letter-spacing="3">${WC_EYE[wcType].toUpperCase()}</text>
+    ${hl.map((l,i)=>`<text x="60" y="${210+i*78}" fill="#fff" font-family="Bricolage Grotesque,Arial" font-size="72" font-weight="800">${l}</text>`).join('')}
+    <text x="64" y="${230+hl.length*78}" fill="#fff" opacity="0.85" font-family="DM Mono,monospace" font-size="28">${meta}</text>
+    <rect x="60" y="780" width="680" height="86" rx="20" fill="rgba(0,0,0,0.28)"/>
+    <text x="86" y="833" fill="#fff" font-family="Arial" font-size="26" font-weight="600">Amplified by ${lift} artists on Songfinch</text>
+    <text x="64" y="930" fill="#fff" font-family="Arial" font-size="28" font-weight="700">♪ Songfinch</text>
+    <text x="${w-64}" y="930" fill="#fff" opacity="0.85" text-anchor="end" font-family="DM Mono,monospace" font-size="26">${handle}</text>
+  </svg>`;
+  const blob=new Blob([svg],{type:'image/svg+xml'});const url=URL.createObjectURL(blob);
+  const img=new Image();img.onload=()=>{const cv=document.createElement('canvas');cv.width=w;cv.height=h;const ctx=cv.getContext('2d');ctx.drawImage(img,0,0);
+    cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='songfinch-win-card.png';a.click();URL.revokeObjectURL(url);toast('Win card saved. Post it and tag your story');},'image/png');};
+  img.onerror=()=>{const a=document.createElement('a');a.href=url;a.download='songfinch-win-card.svg';a.click();toast('Win card saved');};
+  img.src=url;
 }
 
-function showToast(msg,type='success'){
-  let el=document.getElementById('_toast');
-  if(!el){el=document.createElement('div');el.id='_toast';el.style.cssText='position:fixed;bottom:24px;right:24px;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;transition:opacity .3s;max-width:320px;pointer-events:none;';document.body.appendChild(el);}
-  const m={success:['#f0fdf4','#166534','#86efac'],warn:['#fffbeb','#92400e','#fcd34d'],error:['#fef2f2','#b91c1c','#fca5a5']};
-  const[bg,tx,br]=m[type]||m.success;
-  el.style.cssText+=`;background:${bg};color:${tx};border:1px solid ${br};opacity:1;`;
-  el.textContent=msg;clearTimeout(el._t);el._t=setTimeout(()=>el.style.opacity='0',3500);
+/* ============ SHARE ============ */
+function openShare(){document.getElementById('shareForm').style.display='block';document.getElementById('shareSuccess').style.display='none';document.getElementById('ov-share').classList.add('show');}
+function submitShare(){
+  const k=document.getElementById('shKind').value,plat=document.getElementById('shPlat').value,cap=document.getElementById('shCap').value.trim()||'Sharing a win.',g=document.getElementById('shGenre').value;
+  POSTS.unshift({n:"Marcus Vale",h:"@marcusvalemusic · just now",av:"https://i.pravatar.cc/120?img=12",plat,src:plat==='sf'?'internal':'external',g,k,hot:false,score:1,cap,supports:1,comments:0,lift:0,vtype:plat==='sf'?'pov':undefined});
+  store.set('mom_post',true);refreshMomentum();
+  document.getElementById('shareForm').style.display='none';document.getElementById('shareSuccess').style.display='block';
+  sortMode='recent';document.querySelectorAll('.sort').forEach(b=>b.classList.toggle('on',b.dataset.sort==='recent'));renderFeed();
 }
 
-loadCfg();applySettingsForm();loadSheet();setInterval(loadSheet,5*60*1000);
+/* ============ MESSAGES ============ */
+const MSGS=[
+  {n:"June Okafor",img:"https://i.pravatar.cc/80?img=44",p:"Saw your Father's Day post, that hook is gold. Mind if I borrow the angle?",t:"2m"},
+  {n:"Dani Cross",img:"https://i.pravatar.cc/80?img=20",p:"Boosted your single. The bridge wrecked me. More like that please.",t:"1h"},
+  {n:"Rico Mendez",img:"https://i.pravatar.cc/80?img=15",p:"New here. Your Start Here reply about acceptance rate changed my whole week. Thank you.",t:"3h"}
+];
+function openMessages(){document.getElementById('msgList').innerHTML=MSGS.map(m=>`<div class="msg-item" onclick="toast('Opening chat with ${m.n}')">
+  <div class="msg-av" style="background-image:url('${m.img}')"></div><div style="flex:1"><div class="msg-n">${m.n}</div><div class="msg-p">${m.p}</div></div><div class="msg-time">${m.t}</div></div>`).join('');
+  document.getElementById('drawer').classList.add('show');}
+function closeMessages(){document.getElementById('drawer').classList.remove('show');}
+
+/* ============ NAV / UTIL ============ */
+function navTo(v){
+  ['dashboard','community','creative'].forEach(x=>{
+    const view=document.getElementById('view-'+x);if(view)view.classList.toggle('show',x===v);
+    const nav=document.getElementById('nav-'+x);if(nav)nav.classList.toggle('active',x===v);
+  });
+  reelActive=(v==='community'&&document.getElementById('seg-reel').classList.contains('on'));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function setPerf(mode){
+  const del=mode==='delivery';
+  document.getElementById('kpi-delivery').style.display=del?'':'none';
+  document.getElementById('kpi-discovery').style.display=del?'none':'';
+  document.getElementById('block-delivery').style.display=del?'':'none';
+  document.getElementById('block-discovery').style.display=del?'none':'';
+  document.getElementById('pf-del').classList.toggle('on',del);
+  document.getElementById('pf-dis').classList.toggle('on',!del);
+}
+/* ---- ORDERS ---- */
+const ORDERS={
+  new:[
+    {id:542701,type:'song',lyric:'07/01/26',song:'07/03/26',title:'',buyer:'Priya Anand',rec:'Mom',earn:153},
+    {id:542718,type:'song',lyric:'07/02/26',song:'07/04/26',title:'',buyer:'Devon Hart',rec:'Casey',earn:153}
+  ],
+  progress:[
+    {id:542073,type:'rev',lyric:'06/21/26',song:'06/27/26',title:'Six Dollars',buyer:'Kris Williams',rec:'Jordan',earn:38},
+    {id:542454,type:'song',lyric:'06/26/26',song:'06/28/26',title:'',buyer:'Lindsay Johnson',rec:'Dan',earn:115},
+    {id:542492,type:'rev',lyric:'06/24/26',song:'06/28/26',title:'My Green-Eyed Beauty',buyer:'Marco Winter',rec:'Laurene',earn:38},
+    {id:542489,type:'song',lyric:'06/27/26',song:'06/29/26',title:'',buyer:'Kennedi Pochmara',rec:'Keri',earn:153},
+    {id:542502,type:'song',lyric:'06/27/26',song:'06/29/26',title:'',buyer:'Melissa Allen',rec:'Nicholas Wheeler',earn:153},
+    {id:542509,type:'song',lyric:'06/27/26',song:'06/29/26',title:'',buyer:'Aaron Weast',rec:'Abby',earn:153},
+    {id:542646,type:'song',lyric:'06/30/26',song:'07/02/26',title:'',buyer:'Sergio Cunha',rec:'Rosa',earn:153}
+  ],
+  submitted:[
+    {id:541980,type:'song',lyric:'06/18/26',song:'06/24/26',title:'Lucky One',buyer:'Hannah Brooks',rec:'Tyler',earn:153},
+    {id:541944,type:'song',lyric:'06/17/26',song:'06/23/26',title:'',buyer:'Owen Mills',rec:'Grandpa Joe',earn:115}
+  ],
+  completed:[
+    {id:541702,type:'song',lyric:'06/10/26',song:'06/15/26',title:'Velvet Morning',buyer:'Rachel Diaz',rec:'Sam',earn:153},
+    {id:541688,type:'rev',lyric:'06/09/26',song:'06/14/26',title:'',buyer:'Tom Becker',rec:'Eli',earn:38}
+  ]
+};
+const ORD_TABS=[['new','New'],['progress','In Progress'],['submitted','Submitted'],['completed','Completed']];
+let ordStatus='progress';
+function renderOrderTabs(){
+  document.getElementById('ordTabs').innerHTML=ORD_TABS.map(([k,l])=>{
+    const c=ORDERS[k].length;
+    return `<div class="ord-tab ${k===ordStatus?'on':''}" onclick="setOrders('${k}')">${l}${c?`<span class="cnt">${c}</span>`:''}</div>`;
+  }).join('');
+}
+function renderOrders(){
+  const rows=ORDERS[ordStatus];
+  let body=rows.map(o=>`<tr>
+    <td class="onum">${o.id}</td>
+    <td><span class="otype ${o.type}">${o.type.toUpperCase()}</span></td>
+    <td class="odate">${o.lyric}</td>
+    <td class="odate">${o.song}</td>
+    <td>${o.title?`<span class="otitle" style="cursor:pointer" onclick="toast('Opening ${esc(o.title)} (concept)')">${esc(o.title)}</span>`:''}</td>
+    <td>${esc(o.buyer)}</td>
+    <td>${esc(o.rec)}</td>
+    <td><span class="ord-link" onclick="toast('Opening song page (concept)')">View Song Page</span></td>
+    <td class="earn">$${o.earn.toFixed(2)}</td></tr>`).join('');
+  if(!rows.length)body=`<tr><td colspan="9" style="text-align:center;color:var(--sub);padding:30px">No orders here right now.</td></tr>`;
+  document.getElementById('ordWrap').innerHTML=`<table class="ord">
+    <thead><tr><th>Order #</th><th>Type</th><th>Lyric Due Date</th><th>Song Due Date</th><th>Title</th><th>Purchaser</th><th>Recipient</th><th>Song Page</th><th class="r">Earnings</th></tr></thead>
+    <tbody>${body}</tbody></table>`;
+  const total=rows.reduce((s,o)=>s+o.earn,0);
+  document.getElementById('ordTotal').innerHTML=`Total: <b>$${total.toFixed(2)}</b>`;
+}
+function setOrders(k){ordStatus=k;renderOrderTabs();renderOrders();}
+/* ---- DISCOVERY ACTIVITY ---- */
+const DISC=[
+  {ic:"https://i.pravatar.cc/80?img=45",t:"Maya Reyes boosted your single",s:"Counts as a real Spotify play",w:"2m"},
+  {ic:"🎬",t:"Your POV video hit the customer feed",s:"38 appearances this week",w:"1h"},
+  {ic:"https://i.pravatar.cc/80?img=20",t:"Dani Cross saved your profile",s:"After watching your live take",w:"3h"},
+  {ic:"⭐",t:"You were featured in the folk feed",s:"Hand-picked for the weekend push",w:"1d"}
+];
+function renderDisc(){
+  document.getElementById('discList').innerHTML=DISC.map(d=>`<div class="disc-row">
+    <div class="disc-av" style="${d.ic.startsWith('http')?`background-image:url('${d.ic}')`:'background:var(--mint-soft)'}">${d.ic.startsWith('http')?'':d.ic}</div>
+    <div style="flex:1"><div class="disc-t">${d.t}</div><div class="disc-s">${d.s}</div></div>
+    <div class="disc-when">${d.w}</div></div>`).join('');
+}
+function toggleWhats(){document.getElementById('whats').classList.toggle('show');}
+function closeOverlay(id){document.getElementById(id).classList.remove('show');}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('show');}));
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function nowStr(){const d=new Date();return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' · '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}
+let toastT;
+function toast(msg){const t=document.getElementById('toast');t.innerHTML=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3200);}
+
+/* ============ INIT ============ */
+renderFeed();renderLead();refreshMomentum();renderCamps();renderWinCard();buildReel();
+renderOrderTabs();renderOrders();renderDisc();reelActive=false;
+const g=store.get('led_give',12),get=store.get('led_get',9);
+document.getElementById('ledGive').textContent=g;document.getElementById('ledGet').textContent=get;
+document.getElementById('ledFill').style.width=Math.min(100,Math.round(get/g*100))+'%';
 </script>
 </body>
 </html>
